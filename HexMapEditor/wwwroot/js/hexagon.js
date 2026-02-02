@@ -63,11 +63,19 @@ function drawHex(hex) {
 	target.appendChild(child);
 }
 
+function pullBinary(path) {
+
+}
+
+function saveToBinary(object) {
+	new TextEncoder().encode(JSON.stringify(object));
+}
+
 const debug = document.getElementById("debug");
 const viewbox = document.getElementById("hexDisplay");
 var hex_list = gen_hex_list(150, 150, 20);
 hex_list.forEach(hexToString);
-hex_list.forEach(drawHex)
+hex_list.forEach(drawHex);
 
 
 //<script>

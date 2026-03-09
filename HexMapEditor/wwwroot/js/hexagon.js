@@ -13,29 +13,37 @@ function gen_hex_list(height, width, hex_rad) {
 	// Starting values of X and Y
 	var current_x = hex_rad;
 	var current_y = hex_height / 2;
-
+	var grid_x = 0;
+	var grid_y = 0;
 
 	var hex_grid = [];
 	var isEvenRow = true;
+
 	while (current_y < height) {
 		if (isEvenRow) {
 			current_x = hex_rad;
+			grid_x = 0;
 		} else {
 			current_x = hex_width + (hex_rad/2);
+			grid_x = 1;
 		}
 		isEvenRow = !isEvenRow;
 		while (current_x < width) {
 			const new_hex = {
 				x: current_x,
 				y: current_y,
-				radius: hex_rad
+				radius: hex_rad,
+				grid_x: grid_x,
+				grid_y: grid_y
 			};
 			hex_grid.push(new_hex);
 			current_x += hex_width + hex_rad;
+			grid_x += 2;
 		}
 		current_y += hex_height / 2;
+		grid_y += 1;
 	}
-	return hex_grid;
+	return hex_grid; 
 	
 
 	// get next hex along, get all vertices
@@ -43,39 +51,6 @@ function gen_hex_list(height, width, hex_rad) {
 	// listContainer.innerHTML = listItemsHTML;
 
 }
-
-function hexToString(hex) {
-	console.log(hex.x + ", " + hex.y);
-}
-
-// Could have target be passed in for better abstraction
-function drawHex(hex) {
-	const target = document.getElementById("hexDisplay");
-	const child = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-	var payload = ""
-	for (let i = 0; i < 6; i++) {
-		var point = get_hex_corner(hex, hex.radius, i);
-		console.log("x and y are " + Math.round(point[0]) + " " + Math.round(point[1]))
-		payload += Math.round(point[0]) + "," + Math.round(point[1]) + " "
-	}
-	child.setAttribute("points", payload.trim());
-	console.log(payload.trimEnd())
-	target.appendChild(child);
-}
-
-function pullBinary(path) {
-
-}
-
-function saveToBinary(object) {
-	new TextEncoder().encode(JSON.stringify(object));
-}
-
-const debug = document.getElementById("debug");
-const viewbox = document.getElementById("hexDisplay");
-var hex_list = gen_hex_list(150, 150, 20);
-hex_list.forEach(hexToString);
-hex_list.forEach(drawHex);
 
 
 //<script>

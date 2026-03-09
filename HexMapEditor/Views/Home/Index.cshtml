@@ -7,19 +7,171 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p id = "debug"></p>
+    <h1 class="display-4">World Map</h1>
+    
     <canvas id="canvas" width="150" height="150"></canvas>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <svg width="600" height="400" viewBox="-300 -200 600 400" id = "viewbox">
+    <svg width="1200" height="800" viewBox="0 0 1200 800" id = "viewbox">
 
     <g id="hexDisplay">
-        
+        <defs id="clipDefs"></defs>
     </g>
+    <p id = "debug"></p>
     </svg>
     
 </div>
 
 @section Scripts {
     <script src="\js\hexagon.js"></script>
+    <script>
+        function hexToString(hex) {
+	console.log(hex.x + ", " + hex.y);
 }
+
+// Could have target be passed in for better abstraction
+function drawHex(hex) {
+	const target = document.getElementById("hexDisplay");
+	const child = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+	var payload = ""
+	for (let i = 0; i < 6; i++) {
+		var point = get_hex_corner(hex, hex.radius, i);
+		payload += Math.round(point[0]) + "," + Math.round(point[1]) + " "
+	}
+	child.setAttribute("points", payload.trim());
+	target.appendChild(child);
+}
+
+function drawContents(hex) {
+    // 1. Search for coordinates in cell_list. This is the SLOWEST possible way, please fix later
+    for (let i = 0; i < cell_list.length; i++) {
+        if ((cell_list[i][0] == hex.grid_x) && (cell_list[i][1] == hex.grid_y)) {
+            const id = "clip-" + cell_list[i][0] + "-" + cell_list[i][1];
+            @* console.log("Discovered a goodun"); *@
+            const target = document.getElementById("hexDisplay");
+            const defs = document.getElementById("clipDefs");
+            const clipElement = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
+            const child = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+
+
+            // Create polygon for clipping
+            var payload = ""
+            let MinX = 2147483646;
+            let MinY = 2147483646;
+            for (let i = 0; i < 6; i++) {
+                var point = get_hex_corner(hex, hex.radius, i);
+                let x = Math.round(point[0])
+                let y = Math.round(point[1])
+                payload += x + "," + y + " "
+                if (x < MinX) MinX = x;
+                if (y < MinY) MinY = y;
+            }
+            child.setAttribute("points", payload.trim());
+            clipElement.appendChild(child);
+            clipElement.setAttribute("id", id);
+            defs.appendChild(clipElement);
+            
+            for (let j = 2; j < cell_list[i].length; j++) {
+                for (let k = 0; k < cell_list[i][j].length;k++) {
+                    const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
+                    // Create image to be clipped
+                    contentLayer.setAttribute("href", nameContents(cell_list[i][j][k]));
+                    contentLayer.setAttribute("clip-path", "url(#" + id + ")")
+                    contentLayer.setAttribute("x", MinX.toString());
+                    contentLayer.setAttribute("y", MinY.toString())
+                    contentLayer.setAttribute("width", hex.radius * 2)
+                    contentLayer.setAttribute("height", hex.radius * 2)
+                    target.appendChild(contentLayer);
+                }
+                
+            }
+            
+            break;
+        } else {
+            @* console.log("Discovered that " + cell_list[i][0] + "," + cell_list[i][1] + " is not the same as " + hex.grid_x + "," + hex.grid_y); *@
+            @* console.log(cell_list); *@
+        }
+    }
+	
+}
+
+function nameContents(contents) {
+    let customString = "" + contents
+    switch (customString) {
+        case "grass":
+            @* console.log("found a grass"); *@
+            return "@Url.Content("~/images/grass.png")"
+        case "water":
+            return "@Url.Content("~/images/water.png")"
+        case "desert":
+            return "@Url.Content("~/images/desert.png")"
+        case "mountains":
+            return "@Url.Content("~/images/mountains.png")"
+        case "fogowar":
+            return "@Url.Content("~/images/fogowar.jpg")"
+        case "hills":
+            return "@Url.Content("~/images/hills.png")"
+        case "trees":
+            return "@Url.Content("~/images/trees.png")"
+        case "buildings":
+            return "@Url.Content("~/images/buildings.png")"
+        case "rocky":
+            return "@Url.Content("~/images/rocky.png")"
+        case "swamp":
+            return "@Url.Content("~/images/swamp.png")"
+        default:
+            console.log("Defaulted when looking at " + contents);
+            return "@Url.Content("~/images/unknown.png")"
+    }
+
+
+}
+
+@* Function only used to sort cell objects. *@
+function compareCell(a, b) {
+    if (a[0] == b[0]) {
+        if (a[1] == b[1]) {
+            return 0;
+        } else if (a[1] < b[1]) {
+            return -1;
+        } else {
+            return 1;
+        }
+    } else if (a[0] < b[0]) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+const items = @Json.Serialize(Model);
+console.log("Deserialised json looks like:" + items)
+const MinX = items[0][0]
+const MinY = items[0][1]
+const MaxX = items[1][0]
+const MaxY = items[1][1]
+const cell_list = items.slice(2,);
+cell_list.sort(compareCell);
+console.log(cell_list);
+const debug = document.getElementById("debug");
+const viewbox = document.getElementById("hexDisplay");
+var hex_list = gen_hex_list(900, 900, 20);
+@* hex_list.forEach(hexToString); *@
+@* hex_list.forEach(drawHex); *@
+hex_list.forEach(drawContents)
+
+console.log(cell_list);
+console.log(hex_list);
+
+
+    </script>
+}
+
+@* 
+[
+    1,
+    0,
+    [
+        "red",
+        "blue"
+    ]
+]
+ *@

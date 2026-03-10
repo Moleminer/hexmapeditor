@@ -21,8 +21,6 @@ public class HomeController : Controller
     {
         
         Tilemap tilemap = PullTilemap();
-        Tuple<int, int> t = new(0, 0);
-        Console.WriteLine("Checkpoint 1. 0, 0 length:" + tilemap.GetCell(0, 0).Count);
         return View(tilemap.ToList());
     }
 

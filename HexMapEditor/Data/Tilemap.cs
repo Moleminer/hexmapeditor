@@ -78,6 +78,21 @@ public class Tilemap()
 		return returnList;
 	}
 
+	public List<object> ToJson()
+	{
+		Console.WriteLine("Writing to list");
+		List<object> returnList = [new List<int?>([MinX, MinY]), new List<int?>([MaxX, MaxY])];
+		foreach (Tuple<int,int> i in MapH.Keys)
+		{
+			// Console.WriteLine(i.Item1 + " " + i.Item2 + " " + MapH[i].contents.Count);
+			List<object> sublist = [i.Item1, i.Item2, new List<string>(MapH[i].contents)];
+			returnList.Add(sublist);
+		}
+			
+		
+		return returnList;
+	}
+
 	public void AdjustRange(int x, int y)
 	{
 		MinX ??= x;

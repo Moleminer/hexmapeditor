@@ -5,6 +5,7 @@ using HexMapEditor.Data;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 
 namespace HexMapEditor.Controllers;
 
@@ -21,6 +22,9 @@ public class HomeController : Controller
     {
         
         Tilemap tilemap = PullTilemap();
+        string json = JsonSerializer.Serialize(tilemap);
+        Console.WriteLine(json);
+        return View(json);
         return View(tilemap.ToList());
     }
 
@@ -61,7 +65,7 @@ public class HomeController : Controller
                         y = curr_y,
                         contents = []
                     };
-                Boolean breakout = false;
+				bool breakout = false;
                 foreach (char c in line)
                 {
                     if (breakout)

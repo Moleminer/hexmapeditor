@@ -1,6 +1,9 @@
-﻿@* @using System.Collections.ObjectModel *@
-@Model
+﻿@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Web
+@using Microsoft.AspNetCore.Html
 @{
+    HtmlString modelJson =Model;
     ViewData["Title"] = "World Map";
 }
 
@@ -40,11 +43,12 @@ function drawHex(hex) {
 	target.appendChild(child);
 }
 
-function drawContents(hex) {
-    // 1. Search for coordinates in cell_list. This is the SLOWEST possible way, please fix later
-    for (let i = 0; i < cell_list.length; i++) {
-        if ((cell_list[i][0] == hex.grid_x) && (cell_list[i][1] == hex.grid_y)) {
-            const id = "clip-" + cell_list[i][0] + "-" + cell_list[i][1];
+function drawContents(contents_list, hex_list) {
+    for (let i = 0; i < contents_list.length; i++) {
+        @* console.log("x is " + i) *@
+        for (let j = 0; j < contents_list[i].length; j++) {
+            @* console.log("y is " + j) *@
+            const id = "clip-" + i + "-" + j;
             @* console.log("Discovered a goodun"); *@
             const target = document.getElementById("hexDisplay");
             const defs = document.getElementById("clipDefs");
@@ -56,8 +60,8 @@ function drawContents(hex) {
             var payload = ""
             let MinX = 2147483646;
             let MinY = 2147483646;
-            for (let i = 0; i < 6; i++) {
-                var point = get_hex_corner(hex, hex.radius, i);
+            for (let k = 0; k < 6; k++) {
+                var point = get_hex_corner(hex_list[i][j], hex_list[i][j].radius, k);
                 let x = Math.round(point[0])
                 let y = Math.round(point[1])
                 payload += x + "," + y + " "
@@ -69,25 +73,18 @@ function drawContents(hex) {
             clipElement.setAttribute("id", id);
             defs.appendChild(clipElement);
             
-            for (let j = 2; j < cell_list[i].length; j++) {
-                for (let k = 0; k < cell_list[i][j].length;k++) {
+            for (let k = 0; k < contents_list[i][j].length; k++) {
                     const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
                     // Create image to be clipped
-                    contentLayer.setAttribute("href", nameContents(cell_list[i][j][k]));
+                    contentLayer.setAttribute("href", nameContents(contents_list[i][j][k]));
                     contentLayer.setAttribute("clip-path", "url(#" + id + ")")
                     contentLayer.setAttribute("x", MinX.toString());
                     contentLayer.setAttribute("y", MinY.toString())
-                    contentLayer.setAttribute("width", hex.radius * 2)
-                    contentLayer.setAttribute("height", hex.radius * 2)
+                    contentLayer.setAttribute("width", hex_list[i][j].radius * 2)
+                    contentLayer.setAttribute("height", hex_list[i][j].radius * 2)
                     target.appendChild(contentLayer);
-                }
                 
             }
-            
-            break;
-        } else {
-            @* console.log("Discovered that " + cell_list[i][0] + "," + cell_list[i][1] + " is not the same as " + hex.grid_x + "," + hex.grid_y); *@
-            @* console.log(cell_list); *@
         }
     }
 	
@@ -141,34 +138,26 @@ function compareCell(a, b) {
         return 1;
     }
 }
+    const items = @modelJson
+    // Apparentally we don't need to parse it, because javascript doesn't know it's meant to be a string at this point
+    @* const items = JSON.parse(stringOfModel); *@
+    console.log("Deserialised json looks like:" + items)
 
-const items = @Json.Serialize(Model);
-console.log("Deserialised json looks like:" + items)
 
-const cell_list = items.slice(2,);
-cell_list.sort(compareCell);
-console.log(cell_list);
 const debug = document.getElementById("debug");
 const viewbox = document.getElementById("hexDisplay");
-var hex_list = gen_hex_list(900, 900, 20);
-@* hex_list.forEach(hexToString); *@
-@* hex_list.forEach(drawHex); *@
-hex_list.forEach(drawContents)
+if (items.length != 0) {
+    var hex_list = gen_hex_list(items.length, items[0].length, 20);
+}
+console.log("hex list: ")
+console.log(hex_list)
 
-console.log(cell_list);
+
+drawContents(items, hex_list);
+
+console.log(items);
 console.log(hex_list);
 
 
     </script>
 }
-
-@* 
-[
-    1,
-    0,
-    [
-        "red",
-        "blue"
-    ]
-]
- *@

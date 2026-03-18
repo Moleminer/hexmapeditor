@@ -6,6 +6,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Web;
+using Microsoft.AspNetCore.Html;
 
 namespace HexMapEditor.Controllers;
 
@@ -22,7 +24,10 @@ public class HomeController : Controller
     {
         
         Tilemap tilemap = PullTilemap();
-        Object tilemapString = tilemap.ToJson();
+        HtmlString tilemapString = new(tilemap.ToJson());
+
+        // How to deserialize json, goddamn:
+		// List<List<List<string>>> json = JsonSerializer.Deserialize<List<List<List<string>>>>((string)tilemapString);
         return View(tilemapString);
 
     }

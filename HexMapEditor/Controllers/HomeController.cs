@@ -22,7 +22,8 @@ public class HomeController : Controller
     {
         
         Tilemap tilemap = PullTilemap();
-        return View(tilemap.ToJson());
+        Object tilemapString = tilemap.ToJson();
+        return View(tilemapString);
 
     }
 

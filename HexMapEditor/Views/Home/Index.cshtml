@@ -1,4 +1,5 @@
-﻿@using System.Collections.ObjectModel
+﻿@* @using System.Collections.ObjectModel *@
+@Model
 @{
     ViewData["Title"] = "World Map";
 }
@@ -143,10 +144,7 @@ function compareCell(a, b) {
 
 const items = @Json.Serialize(Model);
 console.log("Deserialised json looks like:" + items)
-const MinX = items[0][0]
-const MinY = items[0][1]
-const MaxX = items[1][0]
-const MaxY = items[1][1]
+
 const cell_list = items.slice(2,);
 cell_list.sort(compareCell);
 console.log(cell_list);

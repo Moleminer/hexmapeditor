@@ -19,16 +19,16 @@ function gen_hex_list(height, width, hex_rad) {
 	var hex_grid = [];
 	var isEvenRow = true;
 
-	while (current_y < height) {
+	while (grid_y < height) {
+		var hex_grid_row = [];
+		grid_x = 0;
 		if (isEvenRow) {
 			current_x = hex_rad;
-			grid_x = 0;
 		} else {
 			current_x = hex_width + (hex_rad/2);
-			grid_x = 1;
 		}
 		isEvenRow = !isEvenRow;
-		while (current_x < width) {
+		while (grid_x < width) {
 			const new_hex = {
 				x: current_x,
 				y: current_y,
@@ -36,10 +36,11 @@ function gen_hex_list(height, width, hex_rad) {
 				grid_x: grid_x,
 				grid_y: grid_y
 			};
-			hex_grid.push(new_hex);
+			hex_grid_row.push(new_hex);
 			current_x += hex_width + hex_rad;
-			grid_x += 2;
+			grid_x += 1;
 		}
+		hex_grid.push(hex_grid_row);
 		current_y += hex_height / 2;
 		grid_y += 1;
 	}

@@ -35,3 +35,10 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.columncontainer3-2 {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  background-color: #fffbf7;
+  padding: 10px;
+}

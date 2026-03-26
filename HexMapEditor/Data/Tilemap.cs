@@ -1,58 +1,74 @@
 using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 
 namespace HexMapEditor.Data;
 
-public struct Cell
+
+public class Tilemap
+{
+	
+	List<List<List<string>>> grid = [];
+	
+	public Tilemap() {;}
+
+	public Tilemap(int x, int y)
 	{
-		public int x;
-        public int y;
-		public List<string> contents;
+		// Create list of empty lists to then add to the Y column
+		List<List<string>> empty_lists = [];
+		for (int i = 0; i < x; i++)
+		{
+			empty_lists.Add([]);
+		}
+
+		for (int i = 0; i < y; i++)
+		{
+			grid.Add(empty_lists);
+		}
 	}
 
-public class Tilemap()
-{
-	Dictionary<Tuple<int, int>, Cell> MapH{get; set;} = [];
-	int? MaxX = null;
-	int? MaxY = null;
-	int? MinX = null;
-	int? MinY = null;
+	public void AppendXLayer(List<List<string>> input)
+	{
+		grid.Add(input);
+	}
+
+	public void AppendYLayer(List<List<string>> input)
+	{
+		int i = 0;
+		foreach (List<string> s in input)
+		{
+			grid.ElementAt(i).Add(s);
+			i++;
+		}
+	}
 	public void AddCellLayer(int x, int y, string layer)
 	{
-		var coords = Tuple.Create(x, y);
-		if (MapH.TryGetValue(coords, out Cell value))
+		try
 		{
-			value.contents.Add(layer);
-		} else
+			grid.ElementAt(x).ElementAt(y).Append(layer);	
+		} catch (ArgumentOutOfRangeException)
 		{
-			MapH[coords] = new Cell
-			{
-				x = x,
-				y = y,
-				contents = [layer]
-			};
-			AdjustRange(x, y);
+			Console.Error.WriteLine("Tried to add a layer to a cell that didn't exist.");
 		}
-		return;
 	}
 
-	public void OverwriteCell(int x, int y, Cell cell)
+	public void OverwriteCell(int x, int y, List<string> cell)
 	{
-		Tuple<int,int> coords = new(x, y);
-		MapH[coords] = cell;
-		AdjustRange(x, y);
+		grid.ElementAt(x).ElementAt(y).Clear();
+		grid.ElementAt(x).ElementAt(y).AddRange(cell);
 	}
 
 	public List<string> GetCell(int x, int y)
 	{
-		Tuple<int, int> ghgh = new(x,y);
-		if (MapH.ContainsKey(ghgh)) {
-			return MapH[ghgh].contents;
-		} else
+		try
 		{
-			Console.WriteLine("FAILURE TO RETRIEVE CELL: " + x + y);
+			return grid[x][y];
+		} catch
+		{
+			Console.Error.WriteLine("Failed to find cell.");
 			return [];
 		}
 	}
@@ -63,30 +79,25 @@ public class Tilemap()
 	}
 
 
-	public List<object> ToList()
+	public List<List<List<string>>> ToList()
 	{
-		Console.WriteLine("Writing to list");
-		List<object> returnList = [new List<int?>([MinX, MinY]), new List<int?>([MaxX, MaxY])];
-		foreach (Tuple<int,int> i in MapH.Keys)
-		{
-			// Console.WriteLine(i.Item1 + " " + i.Item2 + " " + MapH[i].contents.Count);
-			List<object> sublist = [i.Item1, i.Item2, new List<string>(MapH[i].contents)];
-			returnList.Add(sublist);
-		}
-			
-		
-		return returnList;
+		return grid;
 	}
 
-	public void AdjustRange(int x, int y)
+	public string ToJson()
 	{
-		MinX ??= x;
-		MinY ??= y;
-		MaxX ??= x;
-		MaxY ??= y;
-		if (x < MinX) MinX = x;
-		if (y < MinY) MinY = y;
-		if (x < MaxX) MaxX = x;
-		if (y < MaxY) MaxY = y;
+		return System.Text.Json.JsonSerializer.Serialize(grid);
 	}
+
+	// public void AdjustRange(int x, int y)
+	// {
+	// 	MinX ??= x;
+	// 	MinY ??= y;
+	// 	MaxX ??= x;
+	// 	MaxY ??= y;
+	// 	if (x < MinX) MinX = x;
+	// 	if (y < MinY) MinY = y;
+	// 	if (x < MaxX) MaxX = x;
+	// 	if (y < MaxY) MaxY = y;
+	// }
 }

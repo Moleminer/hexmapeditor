@@ -5,6 +5,9 @@ using HexMapEditor.Data;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Web;
+using Microsoft.AspNetCore.Html;
 
 namespace HexMapEditor.Controllers;
 
@@ -21,10 +24,20 @@ public class HomeController : Controller
     {
         
         Tilemap tilemap = PullTilemap();
-        return View(tilemap.ToList());
+        HtmlString tilemapString = new(tilemap.ToJson());
+
+        // How to deserialize json, goddamn:
+		// List<List<List<string>>> json = JsonSerializer.Deserialize<List<List<List<string>>>>((string)tilemapString);
+        return View(tilemapString);
+
     }
 
-    public IActionResult Privacy()
+    public IActionResult Campsite()
+    {
+        return View();
+    }
+
+     public IActionResult About()
     {
         return View();
     }
@@ -45,8 +58,6 @@ public class HomeController : Controller
             StreamReader sr = new StreamReader(@"Content\tilemap.txt");
             //Read the first line of text
             line = sr.ReadLine();
-            int curr_x = 0;
-            int curr_y = 0;
             //Continue to read until you reach end of file
             
             while (line != null)
@@ -55,13 +66,8 @@ public class HomeController : Controller
                 // Console.WriteLine(line);
                 line = line.TrimStart();
 
-                Cell cell = new()
-                    {
-                        x = curr_x,
-                        y = curr_y,
-                        contents = []
-                    };
-                Boolean breakout = false;
+                List<List<string>> grid_line = [[]];
+				bool breakout = false;
                 foreach (char c in line)
                 {
                     if (breakout)
@@ -71,64 +77,60 @@ public class HomeController : Controller
                     switch (c)
                     {
                         case ' ':
-                            if (cell.contents.Count > 0)
+                            if (grid_line.Count < 1 || grid_line.Last().Count > 0)
                             {
-                                tilemap.OverwriteCell(cell.x, cell.y, cell);
+                                grid_line.Add([]);
                             }
-                            curr_x += 2;
-                            cell = new()
-                            {
-                                x = curr_x,
-                                y = curr_y,
-                                contents = []
-                            };
+
                             break;
                         case 'g':
-                            cell.contents.Add("grass");
+                            grid_line.Last().Add("grass");
                             break;
                         case 'w':
-                            cell.contents.Add("water");
+                            grid_line.Last().Add("water");
                             break;
                         case 'd':
-                            cell.contents.Add("desert");
+                            grid_line.Last().Add("desert");
                             break;
                         case 'r':
-                            cell.contents.Add("rocky");
+                            grid_line.Last().Add("rocky");
                             break;
                         case 's':
-                            cell.contents.Add("swamp");
+                            grid_line.Last().Add("swamp");
                             break;
                         case '?':
-                            cell.contents.Add("fogowar");
+                            grid_line.Last().Add("fogowar");
                             break;
                         case 'M':
-                            cell.contents.Add("mountains");
+                            grid_line.Last().Add("mountains");
                             break;
                         case 'H':
-                            cell.contents.Add("hills");
+                            grid_line.Last().Add("hills");
                             break;
                         case 'T':
-                            cell.contents.Add("trees");
+                            grid_line.Last().Add("trees");
                             break;
                         case 'B':
-                            cell.contents.Add("buildings");
+                            grid_line.Last().Add("buildings");
                             break;
                         case '/':
                         case '#':
-                            curr_x = (curr_x+1) % 2;
-                            curr_y -= 1;
                             breakout = true;
                             break;
                         default:
-                            Console.WriteLine("Unrecognised instruction ");
+                            Console.Error.WriteLine("Unrecognised instruction ");
                             break;
 
                     }
                 }
+                // Line to cut out empty cell at end
+                if (grid_line.Count > 0 && grid_line.Last().Count < 1)
+                {
+                    grid_line.RemoveAt(grid_line.Count - 1);
+                }
+                tilemap.AppendXLayer(grid_line);
                 //Read the next line
                 line = sr.ReadLine();
-                curr_x = (curr_x+1) % 2;
-                curr_y += 1;
             }
             //close the file
             sr.Close();

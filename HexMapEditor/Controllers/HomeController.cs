@@ -32,7 +32,12 @@ public class HomeController : Controller
 
     }
 
-    public IActionResult Privacy()
+    public IActionResult Campsite()
+    {
+        return View();
+    }
+
+     public IActionResult About()
     {
         return View();
     }

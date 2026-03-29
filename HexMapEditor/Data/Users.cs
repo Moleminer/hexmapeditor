@@ -12,7 +12,7 @@ namespace HexMapEditor.Data;
 public static class Users
 {
 	
-	public static JsonObject getUsers()
+	public static JsonObject GetUsers()
 	{
 		StreamReader sr = new StreamReader(@"Content\users.json");
 		
@@ -20,8 +20,6 @@ public static class Users
 		// Console.WriteLine(j[0].AsObject());
 		return j[0].AsObject();
 	}
-
-	
 
 	public static string ToJson()
 	{

@@ -74,14 +74,19 @@ function drawContents(contents_list, hex_list) {
             defs.appendChild(clipElement);
             
             for (let k = 0; k < contents_list[i][j].length; k++) {
+                    // Check scale of the next drawing
+                    const scale = scale_of(contents_list[i][j][k]);
+                    // Calculate required horizontal offset. A scale of '1' results in an offset of 0. This should work with scales >1 too. 
+                    const offset = hex_list[i][j].radius * (1 - scale);
+
                     const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
-                    // Create image to be clipped
+                    // Create image to be clipped, and adjust its position based on if it's a foreground or background image. 
                     contentLayer.setAttribute("href", nameContents(contents_list[i][j][k]));
-                    contentLayer.setAttribute("clip-path", "url(#" + id + ")")
-                    contentLayer.setAttribute("x", MinX.toString());
-                    contentLayer.setAttribute("y", MinY.toString())
-                    contentLayer.setAttribute("width", hex_list[i][j].radius * 2)
-                    contentLayer.setAttribute("height", hex_list[i][j].radius * 2)
+                    contentLayer.setAttribute("clip-path", "url(#" + id + ")");
+                    contentLayer.setAttribute("x", (MinX + offset).toString());
+                    contentLayer.setAttribute("y", MinY.toString());
+                    contentLayer.setAttribute("width", hex_list[i][j].radius * scale * 2);
+                    contentLayer.setAttribute("height", hex_list[i][j].radius * scale * 2);
                     target.appendChild(contentLayer);
                 
             }
@@ -90,6 +95,7 @@ function drawContents(contents_list, hex_list) {
 	
 }
 
+//TODO: Combine the two below functions via a data-driven definition instead of hard coding
 function nameContents(contents) {
     let customString = "" + contents
     switch (customString) {
@@ -117,6 +123,38 @@ function nameContents(contents) {
         default:
             console.log("Defaulted when looking at " + contents);
             return "@Url.Content("~/images/unknown.png")"
+    }
+
+
+}
+
+function scale_of(contents) {
+    let customString = "" + contents
+    switch (customString) {
+        case "grass":
+            @* console.log("found a grass"); *@
+            return 1
+        case "water":
+            return 1
+        case "desert":
+            return 1
+        case "mountains":
+            return 0.8
+        case "fogowar":
+            return 1
+        case "hills":
+            return 0.8
+        case "trees":
+            return 0.8
+        case "buildings":
+            return 0.8
+        case "rocky":
+            return 1
+        case "swamp":
+            return 1
+        default:
+            console.error.log("Defaulted when looking at " + contents);
+            return 1
     }
 
 

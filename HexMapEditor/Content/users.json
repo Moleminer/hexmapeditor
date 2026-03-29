@@ -1,0 +1,17 @@
+{
+    "users": {
+		"Mole": {
+			"leisure":1,
+			"duty":1
+		},
+
+		"Spooky": {
+			"leisure":1,
+			"duty":1
+		},
+		"Martos": {
+			"leisure":1,
+			"duty":1
+		}
+	}
+}

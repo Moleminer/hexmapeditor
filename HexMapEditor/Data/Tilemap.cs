@@ -26,35 +26,33 @@ public class Tilemap
 		}
 	}
 
-	public void AppendXLayer(List<List<string>> input)
-	{
-		grid.Add(input);
-	}
-
-	public void AppendYLayer(List<List<string>> input)
-	{
-		int i = 0;
-		foreach (List<string> s in input)
-		{
-			grid.ElementAt(i).Add(s);
-			i++;
-		}
-	}
 	public void AddCellLayer(int x, int y, string layer)
 	{
 		try
 		{
-			grid.ElementAt(x).ElementAt(y).Append(layer);	
-		} catch (ArgumentOutOfRangeException)
+			grid[(x,y)].Add(layer);
+		} catch (KeyNotFoundException)
 		{
-			Console.Error.WriteLine("Tried to add a layer to a cell that didn't exist.");
+			grid.Add((x, y), [layer]);
+		} catch (Exception)
+		{
+			Console.Error.WriteLine("Something went wrong adding layer to cell");
 		}
 	}
 
-	public void OverwriteCell(int x, int y, List<string> cell)
+	public void SetCell(int x, int y, List<string> cell)
 	{
-		grid.ElementAt(x).ElementAt(y).Clear();
-		grid.ElementAt(x).ElementAt(y).AddRange(cell);
+		try
+		{
+			grid[(x,y)] = cell;
+		} catch (KeyNotFoundException)
+		{
+			grid.Add((x, y), cell);
+		} catch (Exception)
+		{
+			Console.Error.WriteLine("Something went wrong writing to cell");
+		}
+		
 	}
 
 	public List<string> GetCell(int x, int y)

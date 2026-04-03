@@ -45,11 +45,10 @@ function drawHex(hex) {
 
 function drawContents(contents_list, hex_list) {
     for (let i = 0; i < contents_list.length; i++) {
-        @* console.log("x is " + i) *@
         for (let j = 0; j < contents_list[i].length; j++) {
-            @* console.log("y is " + j) *@
             const id = "clip-" + i + "-" + j;
-            @* console.log("Discovered a goodun"); *@
+
+            // Grab our elements we're appending: a hex, and its clip list for cropping
             const target = document.getElementById("hexDisplay");
             const defs = document.getElementById("clipDefs");
             const clipElement = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
@@ -58,16 +57,19 @@ function drawContents(contents_list, hex_list) {
 
             // Create polygon for clipping
             var payload = ""
-            let MinX = 2147483646;
-            let MinY = 2147483646;
+            let MinX = 0;
+            let MinY = 0;
             for (let k = 0; k < 6; k++) {
                 var point = get_hex_corner(hex_list[i][j], hex_list[i][j].radius, k);
                 let x = Math.round(point[0])
                 let y = Math.round(point[1])
                 payload += x + "," + y + " "
-                if (x < MinX) MinX = x;
-                if (y < MinY) MinY = y;
-            }
+
+                // Since the hex_corner function runs in the same cycle every time, the lowest X and Y 
+                // are always at the same corners of the hexagon being drawn. 
+                if (k == 3) MinX = x;
+                if (k == 4) MinY = y;
+            } 
             child.setAttribute("points", payload.trim());
             clipElement.appendChild(child);
             clipElement.setAttribute("id", id);
@@ -90,6 +92,16 @@ function drawContents(contents_list, hex_list) {
                     target.appendChild(contentLayer);
                 
             }
+            //After visual layers, add an interaction layer, if we're in edit mode. 
+            const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
+            // Create image to be clipped
+            contentLayer.setAttribute("rect", nameContents(contents_list[i][j][k]));
+            contentLayer.setAttribute("clip-path", "url(#" + id + ")");
+            contentLayer.setAttribute("x", (MinX + offset).toString());
+            contentLayer.setAttribute("y", MinY.toString());
+            contentLayer.setAttribute("width", hex_list[i][j].radius * scale * 2);
+            contentLayer.setAttribute("height", hex_list[i][j].radius * scale * 2);
+            target.appendChild(contentLayer);
         }
     }
 	

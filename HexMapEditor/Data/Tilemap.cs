@@ -10,23 +10,19 @@ namespace HexMapEditor.Data;
 
 public class Tilemap
 {
-	
-	List<List<List<string>>> grid = [];
+
+	Dictionary<ValueTuple<int, int>, List<string>> grid = [];
 	
 	public Tilemap() {;}
 
 	public Tilemap(int x, int y)
 	{
-		// Create list of empty lists to then add to the Y column
-		List<List<string>> empty_lists = [];
 		for (int i = 0; i < x; i++)
 		{
-			empty_lists.Add([]);
-		}
-
-		for (int i = 0; i < y; i++)
-		{
-			grid.Add(empty_lists);
+			for (int j = 0; j < y; j++)
+			{
+				grid.Add((1, 2), []);
+			}
 		}
 	}
 
@@ -65,7 +61,7 @@ public class Tilemap
 	{
 		try
 		{
-			return grid[x][y];
+			return grid[(x, y)];
 		} catch
 		{
 			Console.Error.WriteLine("Failed to find cell.");
@@ -79,10 +75,10 @@ public class Tilemap
 	}
 
 
-	public List<List<List<string>>> ToList()
-	{
-		return grid;
-	}
+	// public List<List<List<string>>> ToList()
+	// {
+	// 	return false;
+	// }
 
 	public string ToJson()
 	{

@@ -44,23 +44,69 @@ function drawHex(hex) {
 }
 
 function drawContents(contents_list, hex_list) {
+    const radius = hex_list[0][0].radius
     for (let i = 0; i < contents_list.length; i++) {
-        for (let j = 0; j < contents_list[i].length; j++) {
-            const id = "clip-" + i + "-" + j;
+        const contents_x = contents_list[i].X;
+        const contents_y = contents_list[i].Y;
+        const id = "clip-" + contents_x + "-" + contents_y;
 
-            // Grab our elements we're appending: a hex, and its clip list for cropping
-            const target = document.getElementById("hexDisplay");
-            const defs = document.getElementById("clipDefs");
-            const clipElement = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
-            const child = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        // Grab our elements we're appending: a hex, and its clip list for cropping
+        const target = document.getElementById("hexDisplay");
+        const defs = document.getElementById("clipDefs");
+        const clipElement = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
+        const child = document.createElementNS('http://www.w3.org/2000/svg','polygon');
 
 
-            // Create polygon for clipping
-            var payload = ""
-            let MinX = 0;
-            let MinY = 0;
+        // Create polygon for clipping
+        var payload = ""
+        let MinX = 0;
+        let MinY = 0;
+        for (let k = 0; k < 6; k++) {
+            var point = get_hex_corner(hex_list[contents_x][contents_y], radius, k);
+            let x = Math.round(point[0])
+            let y = Math.round(point[1])
+            payload += x + "," + y + " "
+
+            // Since the hex_corner function runs in the same cycle every time, the lowest X and Y 
+            // are always at the same corners of the hexagon being drawn. 
+            if (k == 3) MinX = x;
+            if (k == 4) MinY = y;
+        } 
+        child.setAttribute("points", payload.trim());
+        clipElement.appendChild(child);
+        clipElement.setAttribute("id", id);
+        defs.appendChild(clipElement);
+        
+        for (let k = 0; k < contents_list[i].Values.length; k++) {
+                // Check scale of the next drawing
+                const scale = scale_of(contents_list[i].Values[k]);
+                // Calculate required horizontal offset. A scale of '1' results in an offset of 0. This should work with scales >1 too. 
+                const offset = radius * (1 - scale);
+
+                const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
+                // Create image to be clipped, and adjust its position based on if it's a foreground or background image. 
+                contentLayer.setAttribute("href", nameContents(contents_list[i].Values[k]));
+                contentLayer.setAttribute("clip-path", "url(#" + id + ")");
+                contentLayer.setAttribute("x", (MinX + offset).toString());
+                contentLayer.setAttribute("y", MinY.toString());
+                contentLayer.setAttribute("width", radius * scale * 2);
+                contentLayer.setAttribute("height", radius * scale * 2);
+                target.appendChild(contentLayer);
+            
+        }
+        
+    }
+	
+}
+
+function glazeWithInteract(hex_list) {
+    for (const i = 0; i < hex_list.length; i++) {
+        for (let j = 0; j < hex_list[i].length; j++) {
+            //After visual layers, add an interaction layer, if we're in edit mode. 
+            const glazeLayer = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+
             for (let k = 0; k < 6; k++) {
-                var point = get_hex_corner(hex_list[i][j], hex_list[i][j].radius, k);
+                var point = get_hex_corner(hex_list[contents_x][contents_y], radius, k);
                 let x = Math.round(point[0])
                 let y = Math.round(point[1])
                 payload += x + "," + y + " "
@@ -70,41 +116,15 @@ function drawContents(contents_list, hex_list) {
                 if (k == 3) MinX = x;
                 if (k == 4) MinY = y;
             } 
-            child.setAttribute("points", payload.trim());
-            clipElement.appendChild(child);
-            clipElement.setAttribute("id", id);
-            defs.appendChild(clipElement);
-            
-            for (let k = 0; k < contents_list[i][j].length; k++) {
-                    // Check scale of the next drawing
-                    const scale = scale_of(contents_list[i][j][k]);
-                    // Calculate required horizontal offset. A scale of '1' results in an offset of 0. This should work with scales >1 too. 
-                    const offset = hex_list[i][j].radius * (1 - scale);
-
-                    const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
-                    // Create image to be clipped, and adjust its position based on if it's a foreground or background image. 
-                    contentLayer.setAttribute("href", nameContents(contents_list[i][j][k]));
-                    contentLayer.setAttribute("clip-path", "url(#" + id + ")");
-                    contentLayer.setAttribute("x", (MinX + offset).toString());
-                    contentLayer.setAttribute("y", MinY.toString());
-                    contentLayer.setAttribute("width", hex_list[i][j].radius * scale * 2);
-                    contentLayer.setAttribute("height", hex_list[i][j].radius * scale * 2);
-                    target.appendChild(contentLayer);
-                
-            }
-            //After visual layers, add an interaction layer, if we're in edit mode. 
-            const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
-            // Create image to be clipped
-            contentLayer.setAttribute("rect", nameContents(contents_list[i][j][k]));
-            contentLayer.setAttribute("clip-path", "url(#" + id + ")");
-            contentLayer.setAttribute("x", (MinX + offset).toString());
-            contentLayer.setAttribute("y", MinY.toString());
-            contentLayer.setAttribute("width", hex_list[i][j].radius * scale * 2);
-            contentLayer.setAttribute("height", hex_list[i][j].radius * scale * 2);
-            target.appendChild(contentLayer);
+        glazeLayer.setAttribute("points", payload.trim());
+        glazeLayer.setAttribute("fill-opacity", "none");
+        glazeLayer.setAttribute("pointer-events", "all");
+        glazeLayer.setAttribute("onclick", "registerClick(this)");
+        
+        target.appendChild(glazeLayer);
         }
     }
-	
+    
 }
 
 //TODO: Combine the two below functions via a data-driven definition instead of hard coding
@@ -188,22 +208,27 @@ function compareCell(a, b) {
         return 1;
     }
 }
-    const items = @modelJson
-    // Apparentally we don't need to parse it, because javascript doesn't know it's meant to be a string at this point
-    @* const items = JSON.parse(stringOfModel); *@
-    console.log("Deserialised json looks like:" + items)
+
+// Main:   
+
+// We don't need to parse it, because javascript doesn't know it's meant to be a string at this point
+const items = @modelJson
+
+console.log("Deserialised json looks like:" + items)
 
 
 const debug = document.getElementById("debug");
 const viewbox = document.getElementById("hexDisplay");
 if (items.length != 0) {
-    var hex_list = gen_hex_list(items.length, items[0].length, 20);
+    // TODO: The first 2 20s are floating numbers that should react to map size but idfk how without a viewmodel
+    var hex_list = gen_hex_list(20, 20, 20);
 }
 console.log("hex list: ")
 console.log(hex_list)
 
 
 drawContents(items, hex_list);
+glazeWithInteract(hex_list);
 
 console.log(items);
 console.log(hex_list);

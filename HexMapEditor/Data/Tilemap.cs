@@ -4,13 +4,15 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace HexMapEditor.Data;
 
 
 public class Tilemap
 {
-
+	public int grid_height {get; set;}
+	public int grid_width {get; set;}
 	Dictionary<ValueTuple<int, int>, List<string>> grid = [];
 	
 	public Tilemap() {;}
@@ -31,6 +33,8 @@ public class Tilemap
 		try
 		{
 			grid[(x,y)].Add(layer);
+			grid_height = Math.Max(grid_height, y);
+			grid_width = Math.Max(grid_width, x);
 		} catch (KeyNotFoundException)
 		{
 			grid.Add((x, y), [layer]);
@@ -45,6 +49,8 @@ public class Tilemap
 		try
 		{
 			grid[(x,y)] = cell;
+			grid_height = Math.Max(grid_height, y);
+			grid_width = Math.Max(grid_width, x);
 		} catch (KeyNotFoundException)
 		{
 			grid.Add((x, y), cell);
@@ -73,25 +79,16 @@ public class Tilemap
 	}
 
 
-	// public List<List<List<string>>> ToList()
-	// {
-	// 	return false;
-	// }
-
 	public string ToJson()
 	{
-		return System.Text.Json.JsonSerializer.Serialize(grid);
+
+		List<GridCellDto> flatGrid = grid.Select(item => new GridCellDto 
+		{ 
+			X = item.Key.Item1, 
+			Y = item.Key.Item2, 
+			Values = item.Value 
+		}).ToList();
+		return JsonSerializer.Serialize(flatGrid);
 	}
 
-	// public void AdjustRange(int x, int y)
-	// {
-	// 	MinX ??= x;
-	// 	MinY ??= y;
-	// 	MaxX ??= x;
-	// 	MaxY ??= y;
-	// 	if (x < MinX) MinX = x;
-	// 	if (y < MinY) MinY = y;
-	// 	if (x < MaxX) MaxX = x;
-	// 	if (y < MaxY) MaxY = y;
-	// }
 }

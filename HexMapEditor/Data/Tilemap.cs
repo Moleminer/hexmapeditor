@@ -4,68 +4,68 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace HexMapEditor.Data;
 
 
 public class Tilemap
 {
-	
-	List<List<List<string>>> grid = [];
+	public int grid_height {get; set;}
+	public int grid_width {get; set;}
+	Dictionary<ValueTuple<int, int>, List<string>> grid = [];
 	
 	public Tilemap() {;}
 
 	public Tilemap(int x, int y)
 	{
-		// Create list of empty lists to then add to the Y column
-		List<List<string>> empty_lists = [];
 		for (int i = 0; i < x; i++)
 		{
-			empty_lists.Add([]);
-		}
-
-		for (int i = 0; i < y; i++)
-		{
-			grid.Add(empty_lists);
+			for (int j = 0; j < y; j++)
+			{
+				grid.Add((1, 2), []);
+			}
 		}
 	}
 
-	public void AppendXLayer(List<List<string>> input)
-	{
-		grid.Add(input);
-	}
-
-	public void AppendYLayer(List<List<string>> input)
-	{
-		int i = 0;
-		foreach (List<string> s in input)
-		{
-			grid.ElementAt(i).Add(s);
-			i++;
-		}
-	}
 	public void AddCellLayer(int x, int y, string layer)
 	{
 		try
 		{
-			grid.ElementAt(x).ElementAt(y).Append(layer);	
-		} catch (ArgumentOutOfRangeException)
+			grid[(x,y)].Add(layer);
+			grid_height = Math.Max(grid_height, y);
+			grid_width = Math.Max(grid_width, x);
+		} catch (KeyNotFoundException)
 		{
-			Console.Error.WriteLine("Tried to add a layer to a cell that didn't exist.");
+			grid.Add((x, y), [layer]);
+		} catch (Exception)
+		{
+			Console.Error.WriteLine("Something went wrong adding layer to cell");
 		}
 	}
 
-	public void OverwriteCell(int x, int y, List<string> cell)
+	public void SetCell(int x, int y, List<string> cell)
 	{
-		grid.ElementAt(x).ElementAt(y).Clear();
-		grid.ElementAt(x).ElementAt(y).AddRange(cell);
+		try
+		{
+			grid[(x,y)] = cell;
+			grid_height = Math.Max(grid_height, y);
+			grid_width = Math.Max(grid_width, x);
+		} catch (KeyNotFoundException)
+		{
+			grid.Add((x, y), cell);
+		} catch (Exception)
+		{
+			Console.Error.WriteLine("Something went wrong writing to cell");
+		}
+		
 	}
 
 	public List<string> GetCell(int x, int y)
 	{
 		try
 		{
-			return grid[x][y];
+			return grid[(x, y)];
 		} catch
 		{
 			Console.Error.WriteLine("Failed to find cell.");
@@ -79,25 +79,16 @@ public class Tilemap
 	}
 
 
-	public List<List<List<string>>> ToList()
-	{
-		return grid;
-	}
-
 	public string ToJson()
 	{
-		return System.Text.Json.JsonSerializer.Serialize(grid);
+
+		List<GridCellDto> flatGrid = grid.Select(item => new GridCellDto 
+		{ 
+			X = item.Key.Item1, 
+			Y = item.Key.Item2, 
+			Values = item.Value 
+		}).ToList();
+		return JsonSerializer.Serialize(flatGrid);
 	}
 
-	// public void AdjustRange(int x, int y)
-	// {
-	// 	MinX ??= x;
-	// 	MinY ??= y;
-	// 	MaxX ??= x;
-	// 	MaxY ??= y;
-	// 	if (x < MinX) MinX = x;
-	// 	if (y < MinY) MinY = y;
-	// 	if (x < MaxX) MaxX = x;
-	// 	if (y < MaxY) MaxY = y;
-	// }
 }

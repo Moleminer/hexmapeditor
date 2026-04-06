@@ -13,7 +13,7 @@
     <h1 class="display-4">World Map</h1>
     
     <canvas id="canvas" width="150" height="150"></canvas>
-    <svg width="1200" height="800" viewBox="0 0 720 400" id = "viewbox" class="center">
+    <svg width="1200" height="800" viewBox="0 0 800 400" id = "viewbox" class="center">
 
     <g id="hexDisplay">
         <defs id="clipDefs"></defs>
@@ -26,8 +26,11 @@
 @section Scripts {
     <script src="\js\hexagon.js"></script>
     <script src="\js\clickinteraction.js"></script>
-    <script src="\js\definitions.js"></script>
     <script>
+const EMPTY_HEX_GRID_HEIGHT = 24;
+const EMPTY_HEX_GRID_WIDTH = 12;
+const HEX_RADIUS = 20;
+
         function hexToString(hex) {
 	console.log(hex.x + ", " + hex.y);
 }
@@ -131,7 +134,7 @@ const debug = document.getElementById("debug");
 const viewbox = document.getElementById("hexDisplay");
 if (items.length != 0) {
     // TODO: The first 2 20s are floating numbers that should react to map size but idfk how without a viewmodel
-    var hex_list = gen_hex_list(20, 20, 20);
+    var hex_list = gen_hex_list(EMPTY_HEX_GRID_HEIGHT, EMPTY_HEX_GRID_WIDTH, HEX_RADIUS);
 }
 console.log("hex list: ")
 console.log(hex_list)
@@ -142,7 +145,9 @@ glazeWithInteract(hex_list);
 
 console.log(items);
 console.log(hex_list);
-localStorage.setItem("hexmap", items);
+sessionStorage.setItem("hexmap", JSON.stringify(items));
+sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
+sessionStorage.setItem("brush", "grass");
 
     </script>
 }

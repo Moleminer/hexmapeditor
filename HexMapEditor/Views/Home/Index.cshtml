@@ -11,6 +11,14 @@
 
 <div class="text-center">
     <h1 class="display-4">World Map</h1>
+    @{
+        if (Model.IsAdmin) {
+            <label for="myCheck">Brush:</label> 
+            <input type="radio" id="brushButton1" name="brushButtons" onclick="setBrush('grass')" checked="checked">
+            <input type="radio" id="brushButton2" name="brushButtons" onclick="setBrush('desert')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('mountains')">
+        }
+    }
     
     <canvas id="canvas" width="150" height="150"></canvas>
     <svg width="1200" height="800" viewBox="0 0 800 400" id = "viewbox" class="center">
@@ -120,6 +128,10 @@ function compareCell(a, b) {
     } else {
         return 1;
     }
+}
+
+function setBrush(brushType) {
+    sessionStorage.setItem("brush", brushType);
 }
 
 // Main:   

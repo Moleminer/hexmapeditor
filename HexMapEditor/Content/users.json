@@ -1,23 +1,23 @@
 {
     "users": {
 		"mole": {
-			"admin":1,
+			"admin":true,
 			"leisure":1,
 			"duty":1
 		},
 
 		"spooky": {
-			"admin":0,
+			"admin":false,
 			"leisure":1,
 			"duty":1
 		},
 		"martos": {
-			"admin":0,
+			"admin":false,
 			"leisure":1,
 			"duty":1
 		},
 		"guest": {
-			"admin":0,
+			"admin":false,
 			"leisure":0,
 			"duty":0
 		}

@@ -20,8 +20,16 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
+      [Route("/{user}"), Route("/")]
+    public IActionResult Index(string user)
     {
+        if (string.IsNullOrEmpty(user))
+        {
+            user = "guest";
+        } else
+        {
+            user = user.ToLower();
+        }
         
         Tilemap tilemap = PullTilemap();
         HtmlString tilemapString = new(tilemap.ToJson());
@@ -29,7 +37,12 @@ public class HomeController : Controller
         // How to deserialize json, goddamn:
 		// List<List<List<string>>> json = JsonSerializer.Deserialize<List<List<List<string>>>>((string)tilemapString);
         Console.WriteLine(tilemapString);
-		return View(tilemapString);
+        IndexViewModel viewModel = new IndexViewModel
+        {
+            TileMapString = tilemapString,
+            User = user
+        };
+		return View(viewModel);
 
     }
 

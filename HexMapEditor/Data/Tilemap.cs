@@ -2,20 +2,32 @@ using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
-using System.Text.Json;
+using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http.Features;
+using System.Text.Json;
+using System;
+using System.IO;
+using System.Text;
 
 namespace HexMapEditor.Data;
 
 
 public class Tilemap
 {
+	private readonly string path = @"Content\tilemap.json";
 	public int grid_height {get; set;}
 	public int grid_width {get; set;}
 	Dictionary<ValueTuple<int, int>, List<string>> grid = [];
 	
 	public Tilemap() {;}
+	public Tilemap(string jsonInput)
+	{
+		ParseJson(jsonInput);
+		return;
+	}
 
 	public Tilemap(int x, int y)
 	{
@@ -73,9 +85,17 @@ public class Tilemap
 		}
 	}
 
-	public bool SaveToBool()
+	public bool SaveToFile()
 	{
-		return false;
+        string jsonString = ToJson();
+		File.WriteAllText(path, jsonString);
+		return true;
+	}
+
+	public void PullFromFile()
+	{
+		List<string> fileLines = File.ReadLines(path).ToList<string>();
+		ParseJson(fileLines.ElementAt(0));
 	}
 
 
@@ -89,6 +109,28 @@ public class Tilemap
 			Values = item.Value 
 		}).ToList();
 		return JsonSerializer.Serialize(flatGrid);
+	}
+
+	private static void AddText(FileStream fs, string value)
+    {
+        byte[] info = new UTF8Encoding(true).GetBytes(value);
+        fs.Write(info, 0, info.Length);
+    }
+
+	private void ParseJson(string input)
+	{
+		JsonArray node = JsonNode.Parse(input).AsArray();
+
+		foreach (dynamic item in node)
+		{
+			// Console.WriteLine(item["Values"].AsArray()[0]);
+			List<string> values = [];
+			foreach(string str in item["Values"].AsArray())
+			{
+				values.Add(str);
+			}
+			grid.Add(((int)item["X"],(int)item["Y"]), values);
+		}
 	}
 
 }

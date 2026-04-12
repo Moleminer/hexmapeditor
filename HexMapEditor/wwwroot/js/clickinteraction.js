@@ -12,7 +12,8 @@ function glazeWithInteract(hex_list) {
                 payload += x + "," + y + " "
             } 
         glazeLayer.setAttribute("points", payload.trim());
-        glazeLayer.setAttribute("fill", "rgba(255, 0, 0, 0.2)");
+        // glazeLayer.setAttribute("fill", "rgba(255, 0, 0, 0.2)");
+		glazeLayer.setAttribute("fill", "none");
         glazeLayer.setAttribute("pointer-events", "all");
         glazeLayer.setAttribute("onclick", `registerClick(this, ${i}, ${j})`);
         
@@ -25,6 +26,7 @@ function glazeWithInteract(hex_list) {
 function registerClick(clickEvent, x, y) {
 	const brush = sessionStorage.getItem("brush");
 	const hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
+	const needs_glaze = sessionStorage.getItem("isadmin");
 	let items = JSON.parse(sessionStorage.getItem("hexmap"));
 
 	// Create the json node to add to items
@@ -45,7 +47,10 @@ function registerClick(clickEvent, x, y) {
 		items.push(newLayer)
 	}
 	drawLayer(newLayer, hex_list);
-	glazeLayerWithInteract(newLayer, hex_list);
+	// Only draw interact layer if in editing mode. 
+	if (needs_glaze) {
+		glazeLayerWithInteract(newLayer, hex_list);
+	}
 	sessionStorage.setItem("hexmap", JSON.stringify(items));
 
 
@@ -119,7 +124,8 @@ function glazeLayerWithInteract(layer, hex_list) {
 		payload += x + "," + y + " "
 	} 
 	glazeLayer.setAttribute("points", payload.trim());
-	glazeLayer.setAttribute("fill", "rgba(255, 0, 0, 0.2)");
+	// glazeLayer.setAttribute("fill", "rgba(255, 0, 0, 0.2)");
+	glazeLayer.setAttribute("fill", "none");
 	glazeLayer.setAttribute("pointer-events", "all");
 	glazeLayer.setAttribute("onclick", `registerClick(this, ${layer.X}, ${layer.Y})`);
 	

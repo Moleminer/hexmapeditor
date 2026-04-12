@@ -11,12 +11,23 @@
 
 <div class="text-center">
     <h1 class="display-4">World Map</h1>
+   
     @{
         if (Model.IsAdmin) {
-            <label for="myCheck">Brush:</label> 
+            <button onclick = "save()">Save</button>
+            <label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
             <input type="radio" id="brushButton1" name="brushButtons" onclick="setBrush('grass')" checked="checked">
             <input type="radio" id="brushButton2" name="brushButtons" onclick="setBrush('desert')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('water')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('rocky')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('swamp')">
             <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('mountains')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('buildings')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('hills')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('trees')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('fogowar')">
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('erase')">
+            
         }
     }
     
@@ -25,7 +36,10 @@
 
     <g id="hexDisplay">
         <defs id="clipDefs"></defs>
-    </g>
+    </g> 
+    <div class="form-group">
+
+    </div>
     <p id = "debug"></p>
     </svg>
     
@@ -39,7 +53,7 @@ const EMPTY_HEX_GRID_HEIGHT = 24;
 const EMPTY_HEX_GRID_WIDTH = 12;
 const HEX_RADIUS = 20;
 
-        function hexToString(hex) {
+function hexToString(hex) {
 	console.log(hex.x + ", " + hex.y);
 }
 
@@ -132,8 +146,26 @@ function compareCell(a, b) {
 
 function setBrush(brushType) {
     sessionStorage.setItem("brush", brushType);
+    const brushLabel = document.getElementById("brushLabel");
+    brushLabel.textContent = brushType.charAt(0).toUpperCase() +
+            brushType.substr(1).toLowerCase();;
 }
 
+function save()
+{
+    var hexmap = sessionStorage.getItem("hexmap");
+	const form = document.createElement('form');
+    form.id = "transferForm";
+    const input = document.createElement('input');
+    form.method = "POST";
+    form.action  = "/mole";
+    input.value = hexmap;
+    input.type = "hidden";
+    input.name = "transferForm";
+    form.append(input);
+    document.body.append(form);
+    form.submit();
+}
 // Main:   
 
 // We don't need to parse it, because javascript doesn't know it's meant to be a string at this point
@@ -153,13 +185,21 @@ console.log(hex_list)
 
 
 drawContents(items, hex_list);
-glazeWithInteract(hex_list);
 
+True = true;
+False = false;
+isAdmin = @Model.IsAdmin
+
+//  TODO: This is like, twelve sins in a trenchcoat. FIX
+if (isAdmin) {
+    glazeWithInteract(hex_list);
+}
 console.log(items);
 console.log(hex_list);
 sessionStorage.setItem("hexmap", JSON.stringify(items));
 sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
 sessionStorage.setItem("brush", "grass");
+sessionStorage.setItem("isadmin", isAdmin);
 
     </script>
 }

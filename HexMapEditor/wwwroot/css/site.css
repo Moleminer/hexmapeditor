@@ -69,5 +69,5 @@ body {
   gap: 40px;             /* Space between Compass and Key */
   width: 200px;          /* Adjust based on your needs */
   padding: 10px;
-  border-left: 2px solid #ccc; /* Optional visual separator */
+  /*border-left: 2px solid #ccc; /* Optional visual separator */
 }

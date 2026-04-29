@@ -48,7 +48,7 @@ public class HomeController : Controller
 
         // How to deserialize json, goddamn:
 		// List<List<List<string>>> json = JsonSerializer.Deserialize<List<List<List<string>>>>((string)tilemapString);
-        Console.WriteLine(tilemapString);
+        // Console.WriteLine(tilemapString);
         IndexViewModel viewModel = new IndexViewModel
         {
             TileMapString = tilemapString,

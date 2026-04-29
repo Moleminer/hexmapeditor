@@ -49,9 +49,9 @@
     <script src="\js\hexagon.js"></script>
     <script src="\js\clickinteraction.js"></script>
     <script>
-const EMPTY_HEX_GRID_HEIGHT = 24;
-const EMPTY_HEX_GRID_WIDTH = 12;
-const HEX_RADIUS = 20;
+const EMPTY_HEX_GRID_HEIGHT = 32;
+const EMPTY_HEX_GRID_WIDTH = 23;
+const HEX_RADIUS = 15;
 
 function hexToString(hex) {
 	console.log(hex.x + ", " + hex.y);
@@ -167,6 +167,11 @@ function save()
     form.submit();
 }
 // Main:   
+// First step, check if we're an admin. This changes a lot of behaviour (TODO: Should admin have seperate cshtml page?)
+True = true;
+False = false;
+isAdmin = @Model.IsAdmin
+sessionStorage.setItem("isadmin", (isAdmin==true));
 
 // We don't need to parse it, because javascript doesn't know it's meant to be a string at this point
 const items = @modelJson
@@ -184,11 +189,9 @@ console.log("hex list: ")
 console.log(hex_list)
 
 
-drawContents(items, hex_list);
+drawContents(items, hex_list, isAdmin);
 
-True = true;
-False = false;
-isAdmin = @Model.IsAdmin
+
 
 //  TODO: This is like, twelve sins in a trenchcoat. FIX
 if (isAdmin) {
@@ -199,7 +202,7 @@ console.log(hex_list);
 sessionStorage.setItem("hexmap", JSON.stringify(items));
 sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
 sessionStorage.setItem("brush", "grass");
-sessionStorage.setItem("isadmin", isAdmin);
+
 
     </script>
 }

@@ -25,6 +25,11 @@ function glazeWithInteract(hex_list) {
 
 function registerClick(clickEvent, x, y) {
 	const brush = sessionStorage.getItem("brush");
+
+	// Instead of drawing a layer, erase one if in erase mode
+	if (brush == "erase") {
+		eraseAt(x, y);
+		return;}
 	const hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
 	const needs_glaze = sessionStorage.getItem("isadmin");
 	let items = JSON.parse(sessionStorage.getItem("hexmap"));
@@ -54,6 +59,43 @@ function registerClick(clickEvent, x, y) {
 	sessionStorage.setItem("hexmap", JSON.stringify(items));
 
 
+}
+
+function eraseAt(x, y) {
+	const hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
+	const needs_glaze = sessionStorage.getItem("isadmin");
+	let items = JSON.parse(sessionStorage.getItem("hexmap"));
+
+	// Create the json node to add to items
+	
+	let isFound = false;
+	let editedLayer = null;
+	for (let i = 0; i < items.length; i++) {
+		let hex = items[i];
+		// console.log(`Looking at ${hex.X} vs ${x} and ${hex.Y} vs ${y}. Full object being examined is ${JSON.stringify(hex)} `);
+		if (hex.X == x && hex.Y == y) {
+			isFound = true;
+			editedLayer = items[i];
+			let index = editedLayer.Values.indexOf("fogowar")
+			if (index > -1) {
+				items[i].Values.splice(index, 1);
+				editedLayer.Values.splice(index, 1);
+			}
+			
+			console.log("Found hex, removing")
+			break;
+		}
+	} 
+	if (isFound == false) {
+		console.log("Hex was empty, nothing to delete");
+		return;
+	}
+	drawLayer(editedLayer, hex_list);
+	// Only draw interact layer if in editing mode. 
+	if (needs_glaze) {
+		glazeLayerWithInteract(editedLayer, hex_list);
+	}
+	sessionStorage.setItem("hexmap", JSON.stringify(items));
 }
 
 function drawLayer(layer, hex_list) {
@@ -134,6 +176,7 @@ function glazeLayerWithInteract(layer, hex_list) {
 
 //TODO: Combine the two below functions via a data-driven definition instead of hard coding
 function nameContents(contents) {
+	const isAdmin = sessionStorage.getItem("isadmin");
     let customString = "" + contents
     switch (customString) {
         case "grass":
@@ -145,7 +188,12 @@ function nameContents(contents) {
         case "mountains":
             return "/images/mountains.png"
         case "fogowar":
-            return "/images/fogowar.png"
+			if (isAdmin == true) {
+				return "/images/border.png"
+			} else {
+				return "/images/fogowar.png"
+			}
+            
         case "hills":
             return "/images/hills.png"
         case "trees":
@@ -176,7 +224,7 @@ function scale_of(contents) {
         case "mountains":
             return 0.8
         case "fogowar":
-            return 1
+            return 1;
         case "hills":
             return 0.8
         case "trees":

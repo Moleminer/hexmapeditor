@@ -46,12 +46,18 @@ public class HomeController : Controller
         Tilemap tilemap = PullTilemap();
         HtmlString tilemapString = new(tilemap.ToJson());
 
+        // Now grab assets
+        AssetList assetList = new();
+        assetList.PullFromFile();
+        HtmlString assetListString = new(assetList.ToJson());
+
         // How to deserialize json, goddamn:
 		// List<List<List<string>>> json = JsonSerializer.Deserialize<List<List<List<string>>>>((string)tilemapString);
         // Console.WriteLine(tilemapString);
         IndexViewModel viewModel = new IndexViewModel
         {
             TileMapString = tilemapString,
+            AssetList = assetListString,
             User = user,
             IsAdmin = isAdmin,
             Duty = duty,
@@ -60,7 +66,8 @@ public class HomeController : Controller
 		return View(viewModel);
     }
 
-    [HttpPost]
+
+	[HttpPost]
     [Route("/{user}"), Route("/")]
     public IActionResult Index(string user, string transferForm)
     {

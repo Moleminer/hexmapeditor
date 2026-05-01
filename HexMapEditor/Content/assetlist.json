@@ -31,13 +31,14 @@
 	},
 	{
 		"Name":"Fog of War (Admin)",
-		"Filename":"border",
+		"Filename":"fogowar_admin",
 		"Scale":1
 	},
 	{
 		"Name":"Fog of War",
 		"Filename":"fogowar",
-		"Scale":1
+		"Scale":1,
+		"HasAdminView":true
 	},
 	{
 		"Name":"Mountains",

@@ -80,7 +80,7 @@ public class AssetList
 		foreach (dynamic item in node)
 		{
 			// Console.WriteLine(item["Values"].AsArray()[0]);
-			assetList.Append(new Asset
+			assetList.Add(new Asset
 			{
 				Name = (string)item["Name"],
 				Filename = (string)item["Filename"],

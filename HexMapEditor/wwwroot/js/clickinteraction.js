@@ -99,6 +99,9 @@ function eraseAt(x, y) {
 }
 
 function drawLayer(layer, hex_list) {
+	// First, pull assets from session storage to get our single layer from it.
+    const assets = JSON.parse(sessionStorage.getItem("assets"));
+
     const radius = hex_list[0][0].radius
 	const contents_x = layer.X;
 	const contents_y = layer.Y;
@@ -133,13 +136,18 @@ function drawLayer(layer, hex_list) {
 	
 	for (let k = 0; k < layer.Values.length; k++) {
 			// Check scale of the next drawing
-			const scale = scale_of(layer.Values[k]);
+			const scale = getScale(layer.Values[k], assets);
 			// Calculate required horizontal offset. A scale of '1' results in an offset of 0. This should work with scales >1 too. 
 			const offset = radius * (1 - scale);
 
 			const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
+
 			// Create image to be clipped, and adjust its position based on if it's a foreground or background image. 
-			contentLayer.setAttribute("href", nameContents(layer.Values[k]));
+
+			//First, we find the path to the asset
+			
+			contentLayer.setAttribute("href", getPath(layer.Values[k], assets));
+
 			contentLayer.setAttribute("clip-path", "url(#" + id + ")");
 			contentLayer.setAttribute("x", (MinX + offset).toString());
 			contentLayer.setAttribute("y", MinY.toString());
@@ -175,70 +183,34 @@ function glazeLayerWithInteract(layer, hex_list) {
 }
 
 //TODO: Combine the two below functions via a data-driven definition instead of hard coding
-function nameContents(contents) {
+function getPath(contents, assets) {
 	const isAdmin = sessionStorage.getItem("isadmin");
-    let customString = "" + contents
-    switch (customString) {
-        case "grass":
-            return "/images/grass.png"
-        case "water":
-            return "/images/water.png"
-        case "desert":
-            return "/images/desert.png"
-        case "mountains":
-            return "/images/mountains.png"
-        case "fogowar":
-			if (isAdmin == true) {
-				return "/images/border.png"
-			} else {
-				return "/images/fogowar.png"
-			}
-            
-        case "hills":
-            return "/images/hills.png"
-        case "trees":
-            return "/images/trees.png"
-        case "buildings":
-            return "/images/buildings.png"
-        case "rocky":
-            return "/images/rocky.png"
-        case "swamp":
-            return "/images/swamp.png"
-        default:
-            console.log("Defaulted when looking at " + contents);
-            return "/images/unknown.png"
-    }
 
+	var adminSuffix = "";
+	var found = false;
+	assets.forEach((element) => {
+		if (element["Filename"] == contents) {
+			found = true;
+			if (element["HasAdminView"] == true) {
+				adminSuffix = "_admin";
+			}
+		}
+	});
+	if (found == false) {
+		console.error(`Couldn't find asset for ${contents}. Letting it check image folder anyway.`);
+	}
+	return `/images/${contents}${adminSuffix}.png`;
 
 }
 
-function scale_of(contents) {
-    let customString = "" + contents
-    switch (customString) {
-        case "grass":
-            return 1
-        case "water":
-            return 1
-        case "desert":
-            return 1
-        case "mountains":
-            return 0.8
-        case "fogowar":
-            return 1;
-        case "hills":
-            return 0.8
-        case "trees":
-            return 0.8
-        case "buildings":
-            return 0.8
-        case "rocky":
-            return 1
-        case "swamp":
-            return 1
-        default:
-            console.error.log("Defaulted when looking at " + contents);
-            return 1
-    }
+function getScale(contents, assets) {
+	assets.forEach((element) => {
+		if (element["Filename"] == contents) {
+			return element["Scale"];
+		}
+	});
+	console.error(`Couldn't find scale for ${contents}. Defaulting to 1.`);
+	return 1;
 
 
 }

@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Html
 @{
     HtmlString modelJson = Model.TileMapString;
+    HtmlString modelAssets = Model.AssetList;
     ViewData["Title"] = "World Map";
 }
 
@@ -73,6 +74,10 @@ function drawHex(hex) {
 }
 
 function drawContents(contents_list, hex_list) {
+    // Pull assets from session storage to get their paths later on
+
+    const assets = JSON.parse(sessionStorage.getItem("assets"));
+
     const radius = hex_list[0][0].radius
     for (let i = 0; i < contents_list.length; i++) {
         const contents_x = contents_list[i].X;
@@ -108,13 +113,13 @@ function drawContents(contents_list, hex_list) {
         
         for (let k = 0; k < contents_list[i].Values.length; k++) {
                 // Check scale of the next drawing
-                const scale = scale_of(contents_list[i].Values[k]);
+                const scale = getScale(contents_list[i].Values[k], assets);
                 // Calculate required horizontal offset. A scale of '1' results in an offset of 0. This should work with scales >1 too. 
                 const offset = radius * (1 - scale);
 
                 const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
                 // Create image to be clipped, and adjust its position based on if it's a foreground or background image. 
-                contentLayer.setAttribute("href", nameContents(contents_list[i].Values[k]));
+                contentLayer.setAttribute("href", getPath(contents_list[i].Values[k], assets));
                 contentLayer.setAttribute("clip-path", "url(#" + id + ")");
                 contentLayer.setAttribute("x", (MinX + offset).toString());
                 contentLayer.setAttribute("y", MinY.toString());
@@ -176,10 +181,11 @@ isAdmin = @Model.IsAdmin
 sessionStorage.setItem("isadmin", (isAdmin==true));
 
 // We don't need to parse it, because javascript doesn't know it's meant to be a string at this point
-const items = @modelJson
+const items = @modelJson;
+const assets = @modelAssets;
 
-console.log("Deserialised json looks like:" + items)
-
+// Add assets to session storage for retrieval shortly
+sessionStorage.setItem("assets", JSON.stringify(assets));
 
 const debug = document.getElementById("debug");
 const viewbox = document.getElementById("hexDisplay");

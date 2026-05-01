@@ -12,33 +12,22 @@
 
 <div class="text-center">
     <h1 class="display-4">World Map</h1>
-   
-    @{
-        if (Model.IsAdmin) {
-            <button onclick = "save()">Save</button>
-            <label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
-            <input type="radio" id="brushButton1" name="brushButtons" onclick="setBrush('grass')" checked="checked">
-            <input type="radio" id="brushButton2" name="brushButtons" onclick="setBrush('desert')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('water')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('rocky')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('swamp')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('mountains')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('buildings')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('hills')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('trees')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('fogowar')">
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('erase')">
-            
-        }
-    }
     <div class="main-container"> 
         <svg width="1200" height="800" viewBox="0 0 660 420" id = "viewbox" class="center">
     
     <g id="hexDisplay">
         <defs id="clipDefs"></defs>
     </g> 
-    <div class="sidebar">
+    <div class="sidebar" id="legend">
         <img src="~/images/compass.png" width=128px height=128px/>
+
+        @{ 
+            if (Model.IsAdmin) {
+            <button onclick = "save()">Save</button>
+            <label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
+            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('erase')">
+            }
+            }
     </div>
     </div> 
     
@@ -212,5 +201,50 @@ sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
 sessionStorage.setItem("brush", "grass");
 
 
-    </script>
+</script>
+<script id="draw-legend">
+    function drawLegend() {
+        const isAdmin = (sessionStorage.getItem("isadmin") == "true");
+        const assets = JSON.parse(sessionStorage.getItem("assets"));
+        const legend = document.getElementById("legend");
+        assets.forEach((element, index) => {
+            if (element["Filename"].includes("_admin")) {
+                return;
+            }
+            const div = document.createElement('div');
+            div.className = 'sidebar-element';
+
+            const img = document.createElement('img');
+            img.src = getPath(element["Filename"], assets);
+            img.width = 32;
+            img.height = 32;
+
+            const text = document.createElement('p');
+            text.textContent = element["Name"];
+            text.className = 'sidebar-text'
+
+            // Also add a radio button if in admin mode
+            if (isAdmin == true) {
+                const radiobtn = document.createElement('input');
+                radiobtn.type = "radio";
+                if (index == 0) {
+                    radiobtn.checked = true;
+                }
+                radiobtn.id = `brushButton${index}`;
+                radiobtn.name = "brushButtons";
+                radiobtn.addEventListener("click", () => {
+                    setBrush(element["Filename"])
+                });
+
+                div.appendChild(radiobtn)
+            }
+
+            div.appendChild(img);
+            div.appendChild(text);
+            legend.appendChild(div);
+            });
+    }
+    drawLegend()
+</script>
 }
+@* <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('fogowar')"> *@

@@ -66,8 +66,22 @@ body {
 .sidebar {
   display: flex;
   flex-direction: column; /* Stack Compass and Key vertically */
-  gap: 40px;             /* Space between Compass and Key */
-  width: 200px;          /* Adjust based on your needs */
+  gap: 5px;             /* Space between Compass and Key */
+  width: 200px;          /*TODO: Long enough? */
   padding: 10px;
   /*border-left: 2px solid #ccc; /* Optional visual separator */
+}
+
+.sidebar-element {
+  display: flex;
+  flex-direction: row; /* Stack text and image horizontally */
+  width: 180px;
+  padding: 5px;
+  gap:10px;
+  justify-content: left;
+  vertical-align: middle;
+}
+
+.sidebar-text {
+  
 }

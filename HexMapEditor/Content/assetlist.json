@@ -43,21 +43,21 @@
 	{
 		"Name":"Mountains",
 		"Filename":"mountains",
-		"Scale":1
+		"Scale":0.8
 	},
 	{
 		"Name":"Hills",
 		"Filename":"hills",
-		"Scale":1
+		"Scale":0.8
 	},
 	{
 		"Name":"Forest",
 		"Filename":"trees",
-		"Scale":1
+		"Scale":0.8
 	},
 	{
 		"Name":"Camp",
 		"Filename":"buildings",
-		"Scale":1
+		"Scale":0.8
 	}
 ]

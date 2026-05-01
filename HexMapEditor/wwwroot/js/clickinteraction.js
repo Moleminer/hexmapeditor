@@ -204,13 +204,19 @@ function getPath(contents, assets) {
 }
 
 function getScale(contents, assets) {
+	var scale = 1.0;
+	var found = false;
 	assets.forEach((element) => {
 		if (element["Filename"] == contents) {
-			return element["Scale"];
+			scale = element["Scale"];
+			found = true;
 		}
 	});
-	console.error(`Couldn't find scale for ${contents}. Defaulting to 1.`);
-	return 1;
+	if (found == false) {
+		console.error(`Couldn't find scale for ${contents}. Defaulting to 1.`);
+	}
+	
+	return scale;
 
 
 }

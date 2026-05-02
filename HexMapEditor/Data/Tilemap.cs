@@ -20,7 +20,7 @@ public class Tilemap
 	private readonly string path = @"Content\tilemap.json";
 	public int grid_height {get; set;}
 	public int grid_width {get; set;}
-	Dictionary<ValueTuple<int, int>, List<string>> grid = [];
+	Dictionary<ValueTuple<int, int>, Tile> grid = [];
 	
 	public Tilemap() {;}
 	public Tilemap(string jsonInput)
@@ -35,7 +35,13 @@ public class Tilemap
 		{
 			for (int j = 0; j < y; j++)
 			{
-				grid.Add((1, 2), []);
+				grid.Add((i, j), new Tile
+				{
+					X = i,
+					Y = j,
+					Values = [],
+					Description = ""
+				});
 			}
 		}
 	}
@@ -44,12 +50,17 @@ public class Tilemap
 	{
 		try
 		{
-			grid[(x,y)].Add(layer);
+			grid[(x,y)].Values.Add(layer);
 			grid_height = Math.Max(grid_height, y);
 			grid_width = Math.Max(grid_width, x);
 		} catch (KeyNotFoundException)
 		{
-			grid.Add((x, y), [layer]);
+			grid.Add((x, y), new Tile {
+				X = x,
+				Y = y,
+				Values = [layer],
+				Description = ""
+				});
 		} catch (Exception)
 		{
 			Console.Error.WriteLine("Something went wrong adding layer to cell");
@@ -60,12 +71,17 @@ public class Tilemap
 	{
 		try
 		{
-			grid[(x,y)] = cell;
+			grid[(x,y)].Values = cell;
 			grid_height = Math.Max(grid_height, y);
 			grid_width = Math.Max(grid_width, x);
 		} catch (KeyNotFoundException)
 		{
-			grid.Add((x, y), cell);
+			grid.Add((x, y), new Tile {
+				X = x,
+				Y = y,
+				Values = cell,
+				Description = ""
+				});
 		} catch (Exception)
 		{
 			Console.Error.WriteLine("Something went wrong writing to cell");
@@ -73,7 +89,7 @@ public class Tilemap
 		
 	}
 
-	public List<string> GetCell(int x, int y)
+	public Tile GetCell(int x, int y)
 	{
 		try
 		{
@@ -81,7 +97,7 @@ public class Tilemap
 		} catch
 		{
 			Console.Error.WriteLine("Failed to find cell.");
-			return [];
+			return new Tile();
 		}
 	}
 
@@ -102,12 +118,7 @@ public class Tilemap
 	public string ToJson()
 	{
 
-		List<GridCellDto> flatGrid = grid.Select(item => new GridCellDto 
-		{ 
-			X = item.Key.Item1, 
-			Y = item.Key.Item2, 
-			Values = item.Value 
-		}).ToList();
+		List<Tile> flatGrid = grid.Values.ToList();
 		return JsonSerializer.Serialize(flatGrid);
 	}
 
@@ -129,7 +140,15 @@ public class Tilemap
 			{
 				values.Add(str);
 			}
-			grid.Add(((int)item["X"],(int)item["Y"]), values);
+			int x = (int)item["X"];
+			int y = (int)item["Y"];
+			grid.Add((x,y), new Tile {
+				Values = values,
+				X = x,
+				Y = y,
+				Description = (string)item["Description"]
+			}
+			);
 		}
 	}
 

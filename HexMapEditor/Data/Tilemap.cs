@@ -110,8 +110,8 @@ public class Tilemap
 
 	public void PullFromFile()
 	{
-		List<string> fileLines = File.ReadLines(path).ToList<string>();
-		ParseJson(fileLines.ElementAt(0));
+		string fileLines = File.ReadAllText(path);
+		ParseJson(fileLines);
 	}
 
 

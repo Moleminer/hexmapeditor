@@ -72,52 +72,77 @@ function applyBrushToCell(x, y) {
 }
 
 function openNote(x, y) {
-	// Create a div
-	const overlayDiv = document.createElement('div');
+	// Very first, we need to know if this cell exists or not. 
+	let items = JSON.parse(sessionStorage.getItem("hexmap"));
+	let cell = findCell(x, y, items);
 
-	// Put it on top of everything else
-	overlayDiv.className = "overlay";
-	
+	if (cell == null) {
+		console.error("Cell does not exist.");
+		return;
+	}
 
-	// Add a close button that deletes this div
-	// Add a save button
-	// Add an input that grabs the cell's description
-	const note = document.createElement('textarea');
-	note.className = "note-input";
-	note.value = 
-	overlayDiv.appendChild(note);
+	// Now that we know the cell exists:
 
+	// Set overlay divs to be visible
+	document.getElementById("overlay").style.display = "block";
+	document.getElementById("overlay-window").style.display = "block";
+
+	// Update our input to the cell's current description
+	const note = document.getElementById('note-input');
+	note.value = cell["Description"]
+
+	const button = document.getElementById("note-input-button");
+	button.removeEventListener("click", () => {});
+	button.addEventListener("click", () => {
+		// Input name is note-input
+		var hexmap = sessionStorage.getItem("hexmap");
+		const form = document.createElement('form');
+		form.id = "transferForm";
+		const input = document.getElementById('note-input');
+		form.method = "POST";
+		form.action  = "/updateNote";
+		form.append(input);
+		document.body.append(form);
+		form.submit();
+
+		// var hexmap = sessionStorage.getItem("hexmap");
+		// const form = document.createElement('form');
+		// form.id = "transferForm";
+		// const input = document.createElement('input');
+		// form.method = "POST";
+		// form.action  = "/updateNote";
+		// input.value = hexmap;
+		// input.type = "hidden";
+		// input.name = "transferForm";
+		// form.append(input);
+		// document.body.append(form);
+		// form.submit();
+	})
+}
+
+function closeNote() {
+	document.getElementById("overlay").style.display = "none";
+	document.getElementById("overlay-window").style.display = "none";
 }
 
 function eraseAt(x, y) {
 	const hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
-	const needs_glaze = sessionStorage.getItem("isadmin");
 	let items = JSON.parse(sessionStorage.getItem("hexmap"));
 
 	// Create the json node to add to items
-	
-	let isFound = false;
-	let editedLayer = null;
-	for (let i = 0; i < items.length; i++) {
-		let hex = items[i];
-		// console.log(`Looking at ${hex.X} vs ${x} and ${hex.Y} vs ${y}. Full object being examined is ${JSON.stringify(hex)} `);
-		if (hex.X == x && hex.Y == y) {
-			isFound = true;
-			items[i].Values.pop();
-			editedLayer = items[i];
-			console.log("Found hex, removing top layer")
-			break;
-		}
-	} 
-	if (isFound == false) {
+	const editedCell = findCell(x, y, items);
+	if (editedCell != null) {
+		editedCell.Values.pop();
+		console.log("Found hex, removing top layer")
+	} else {
 		console.log("Hex was empty, nothing to delete");
 		return;
 	}
-	drawLayer(editedLayer, hex_list);
-	// Only draw interact layer if in editing mode. 
-	if (needs_glaze) {
-		glazeLayerWithInteract(editedLayer, hex_list);
-	}
+	
+	// Redraw layer and add back interact layer
+	drawLayer(editedCell, hex_list);
+	glazeLayerWithInteract(editedCell, hex_list);
+
 	sessionStorage.setItem("hexmap", JSON.stringify(items));
 }
 
@@ -242,4 +267,29 @@ function getScale(contents, assets) {
 	return scale;
 
 
+}
+
+/**
+ * @param {number} x
+ * @param {number} y
+ * @param {json} items
+ * @returns {json}
+ * @description Linearly sorts through given items to find cell. 
+* 
+* Returns null if search fails, json cell object on success
+*/
+function findCell(x, y, items) {
+	let cell = null;
+	for (let i = 0; i < items.length; i++) {
+		let hex = items[i];
+		if (hex.X == x && hex.Y == y) {
+			cell = hex;
+			break;
+		}
+	} 
+	return cell;
+}
+
+function stopPropogation(event) {
+	event.stopPropagation();
 }

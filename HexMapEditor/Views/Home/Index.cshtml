@@ -37,6 +37,15 @@
     
 </div>
 
+<div id="overlay" onclick="closeNote()"></div>
+<div id="overlay-window" onclick="stopPropogation(this)">
+    <div><label for="note-input"><h1>Showing Cell Notes:</h1></label></div>
+    <div><textarea id="note-input" name="note-input" rows="5" cols="33">
+        Default value, something went wrong loading this cell. 
+    </textarea></div>
+    <div><button id = "note-input-button">Save</button></div>
+  </div>
+
 @section Scripts {
     <script src="\js\hexagon.js"></script>
     <script src="\js\clickinteraction.js"></script>
@@ -162,6 +171,7 @@ function save()
     document.body.append(form);
     form.submit();
 }
+
 // Main:   
 // First step, check if we're an admin. This changes a lot of behaviour (TODO: Should admin have seperate cshtml page?)
 True = true;
@@ -169,7 +179,7 @@ False = false;
 isAdmin = @Model.IsAdmin
 sessionStorage.setItem("isadmin", (isAdmin==true));
 
-// We don't need to parse it, because javascript doesn't know it's meant to be a string at this point
+// We don't need to parse these, because javascript doesn't know they're meant to be a string at this point
 const items = @modelJson;
 const assets = @modelAssets;
 
@@ -179,7 +189,7 @@ sessionStorage.setItem("assets", JSON.stringify(assets));
 const debug = document.getElementById("debug");
 const viewbox = document.getElementById("hexDisplay");
 if (items.length != 0) {
-    // TODO: The first 2 20s are floating numbers that should react to map size but idfk how without a viewmodel
+    // TODO: The first 2 20s are just floating at start of this file
     var hex_list = gen_hex_list(EMPTY_HEX_GRID_HEIGHT, EMPTY_HEX_GRID_WIDTH, HEX_RADIUS);
 }
 console.log("hex list: ")

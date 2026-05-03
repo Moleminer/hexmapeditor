@@ -1,4 +1,4 @@
-function glazeWithUseBrush(hex_list) {
+function glazeWithInteract(hex_list) {
     const target = document.getElementById("hexDisplay");
     for (let i = 0; i < hex_list.length; i++) {
         for (let j = 0; j < hex_list[i].length; j++) {
@@ -15,6 +15,9 @@ function glazeWithUseBrush(hex_list) {
         // glazeLayer.setAttribute("fill", "rgba(255, 0, 0, 0.2)");
 		glazeLayer.setAttribute("fill", "none");
         glazeLayer.setAttribute("pointer-events", "all");
+		glazeLayer.addEventListener("click", () => {
+                    registerClick(this, i, j)
+                });
         glazeLayer.setAttribute("onclick", `registerClick(this, ${i}, ${j})`);
         
         target.appendChild(glazeLayer);
@@ -23,11 +26,8 @@ function glazeWithUseBrush(hex_list) {
     
 }
 
-function glazeWithOpenNote(hex_list) {
-	return;
-}
-
 function registerClick(clickEvent, x, y) {
+	/** @type {string} */
 	const brush = sessionStorage.getItem("brush");
 
 	// Instead of drawing a layer, erase one if in erase mode

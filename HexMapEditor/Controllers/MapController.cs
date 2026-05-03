@@ -78,11 +78,15 @@ public class MapController : Controller
     //     return RedirectToAction("Index");
     // }
 	[HttpPost]
-	public IActionResult UpdateNote()
+	public IActionResult UpdateNote(string noteinput, int x, int y)
 	{
+		//TODO: change the above to a record to add serverside validation
 		Tilemap tilemap = new();
 		tilemap.PullFromFile();
-
+		Tile cell = tilemap.GetCell(x, y);
+		cell.Description = noteinput;
+		tilemap.SetCell(x, y, cell);
+		tilemap.SaveToFile();
 		return RedirectToAction(nameof(Index));
 	}
 
@@ -92,14 +96,31 @@ public class MapController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+    public Tilemap PullTilemap()
+    {
+        Tilemap tilemap = new();
+        tilemap.PullFromFile();
+        return tilemap;
+    }
+
     public static void WriteDefaultValues()
     {
         Tilemap tilemap = new();
-        tilemap.SetCell(0, 0, ["grass"]);
-        tilemap.SetCell(1, 0, ["grass"]);
-        tilemap.SetCell(0, 1, ["grass"]);
-        tilemap.Grid_height = 10;
-        tilemap.grid_width = 10;
+        tilemap.SetCell(0, 0, new Tile{
+			X = 0,
+			Y = 0,
+			Values = ["Grass"]	
+		});
+		tilemap.SetCell(1, 0, new Tile{
+			X = 1,
+			Y = 0,
+			Values = ["Grass"]	
+		});
+		tilemap.SetCell(0, 1, new Tile{
+			X = 0,
+			Y = 1,
+			Values = ["Grass"]	
+		});
         tilemap.SaveToFile();
         ;
     }

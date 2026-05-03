@@ -88,19 +88,31 @@ function openNote(x, y) {
 	document.getElementById("overlay-window").style.display = "block";
 
 	// Update our input to the cell's current description
-	const note = document.getElementById('note-input');
+	const note = document.getElementById('noteinput');
 	note.value = cell["Description"]
 
-	const button = document.getElementById("note-input-button");
+	const button = document.getElementById("noteinput-button");
 	button.removeEventListener("click", () => {});
 	button.addEventListener("click", () => {
-		// Input name is note-input
+		// Input name is noteinput
 		var hexmap = sessionStorage.getItem("hexmap");
 		const form = document.createElement('form');
-		form.id = "transferForm";
-		const input = document.getElementById('note-input');
+		form.id = "noteinput";
+		const input = document.getElementById('noteinput');
 		form.method = "POST";
 		form.action  = "map/updateNote";
+		form.append(input);
+
+		const input_x = document.createElement('input');
+		input_x.setAttribute("id", "x");
+		input_x.value = x;
+		form.append(input_x);
+
+		const input_y = document.createElement('input');
+		input_y.setAttribute("id", "y");
+		input_y.value = y;
+		form.append(input_y);
+
 		form.append(input);
 		document.body.append(form);
 		form.submit();

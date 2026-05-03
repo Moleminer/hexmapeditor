@@ -18,8 +18,8 @@ namespace HexMapEditor.Data;
 public class Tilemap
 {
 	private readonly string path = @"Content\tilemap.json";
-	public int grid_height {get; set;}
-	public int grid_width {get; set;}
+	public int GridHeight {get; set;}
+	public int GridWidth {get; set;}
 	Dictionary<ValueTuple<int, int>, Tile> grid = [];
 	
 	public Tilemap() {;}
@@ -51,8 +51,8 @@ public class Tilemap
 		try
 		{
 			grid[(x,y)].Values.Add(layer);
-			grid_height = Math.Max(grid_height, y);
-			grid_width = Math.Max(grid_width, x);
+			GridHeight = Math.Max(GridHeight, y);
+			GridWidth = Math.Max(GridWidth, x);
 		} catch (KeyNotFoundException)
 		{
 			grid.Add((x, y), new Tile {
@@ -67,21 +67,13 @@ public class Tilemap
 		}
 	}
 
-	public void SetCell(int x, int y, List<string> cell)
+	public void SetCell(int x, int y, Tile cell)
 	{
 		try
 		{
-			grid[(x,y)].Values = cell;
-			grid_height = Math.Max(grid_height, y);
-			grid_width = Math.Max(grid_width, x);
-		} catch (KeyNotFoundException)
-		{
-			grid.Add((x, y), new Tile {
-				X = x,
-				Y = y,
-				Values = cell,
-				Description = ""
-				});
+			grid[(x,y)] = cell;
+			GridHeight = Math.Max(GridHeight, y);
+			GridWidth = Math.Max(GridWidth, x);
 		} catch (Exception)
 		{
 			Console.Error.WriteLine("Something went wrong writing to cell");
@@ -149,6 +141,8 @@ public class Tilemap
 				Description = (string)item["Description"]
 			}
 			);
+			GridHeight = Math.Max(x, GridHeight);
+			GridWidth = Math.Max(x, GridWidth);
 		}
 	}
 

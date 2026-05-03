@@ -93,20 +93,6 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
     {
         Tilemap tilemap = new();
         tilemap.PullFromFile();
-        tilemap.Grid_height = 10;
-        tilemap.grid_width = 10;
         return tilemap;
-    }
-
-    public static void WriteDefaultValues()
-    {
-        Tilemap tilemap = new();
-        tilemap.SetCell(0, 0, ["grass"]);
-        tilemap.SetCell(1, 0, ["grass"]);
-        tilemap.SetCell(0, 1, ["grass"]);
-        tilemap.Grid_height = 10;
-        tilemap.grid_width = 10;
-        tilemap.SaveToFile();
-        ;
     }
 }

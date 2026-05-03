@@ -190,12 +190,7 @@ drawContents(items, hex_list, isAdmin);
 
 
 
-//  TODO: This is like, twelve sins in a trenchcoat. FIX
-if (isAdmin) {
-    glazeWithUseBrush(hex_list);
-} else {
-    glazeWithOpenNote(hex_list);
-}
+glazeWithInteract(hex_list);
 console.log(items);
 console.log(hex_list);
 sessionStorage.setItem("hexmap", JSON.stringify(items));

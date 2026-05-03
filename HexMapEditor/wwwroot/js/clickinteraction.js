@@ -1,12 +1,12 @@
-function glazeWithInteract(hex_list) {
+function glazeWithInteract(hex_empty_list) {
     const target = document.getElementById("hexDisplay");
-    for (let i = 0; i < hex_list.length; i++) {
-        for (let j = 0; j < hex_list[i].length; j++) {
+    for (let i = 0; i < hex_empty_list.length; i++) {
+        for (let j = 0; j < hex_empty_list[i].length; j++) {
             //After visual layers, add an interaction layer, if we're in edit mode. 
             const glazeLayer = document.createElementNS('http://www.w3.org/2000/svg','polygon');
             payload = "";
             for (let k = 0; k < 6; k++) {
-                var point = get_hex_corner(hex_list[i][j], hex_list[i][j].radius, k);
+                var point = get_hex_corner(hex_empty_list[i][j], hex_empty_list[i][j].radius, k);
                 let x = Math.round(point[0])
                 let y = Math.round(point[1])
                 payload += x + "," + y + " "
@@ -18,7 +18,6 @@ function glazeWithInteract(hex_list) {
 		glazeLayer.addEventListener("click", () => {
                     registerClick(this, i, j)
                 });
-        glazeLayer.setAttribute("onclick", `registerClick(this, ${i}, ${j})`);
         
         target.appendChild(glazeLayer);
         }
@@ -27,6 +26,15 @@ function glazeWithInteract(hex_list) {
 }
 
 function registerClick(clickEvent, x, y) {
+	const isAdmin = (sessionStorage.getItem("isadmin") == "true");
+	if (isAdmin) {
+		applyBrushToCell(x, y);
+	} else {
+		openNote(x, y);
+	}
+}
+
+function applyBrushToCell(x, y) {
 	/** @type {string} */
 	const brush = sessionStorage.getItem("brush");
 
@@ -61,7 +69,23 @@ function registerClick(clickEvent, x, y) {
 		glazeLayerWithInteract(newLayer, hex_list);
 	}
 	sessionStorage.setItem("hexmap", JSON.stringify(items));
+}
 
+function openNote(x, y) {
+	// Create a div
+	const overlayDiv = document.createElement('div');
+
+	// Put it on top of everything else
+	overlayDiv.className = "overlay";
+	
+
+	// Add a close button that deletes this div
+	// Add a save button
+	// Add an input that grabs the cell's description
+	const note = document.createElement('textarea');
+	note.className = "note-input";
+	note.value = 
+	overlayDiv.appendChild(note);
 
 }
 

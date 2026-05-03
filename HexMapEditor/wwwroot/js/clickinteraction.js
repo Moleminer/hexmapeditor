@@ -100,7 +100,7 @@ function openNote(x, y) {
 		form.id = "transferForm";
 		const input = document.getElementById('note-input');
 		form.method = "POST";
-		form.action  = "/updateNote";
+		form.action  = "map/updateNote";
 		form.append(input);
 		document.body.append(form);
 		form.submit();

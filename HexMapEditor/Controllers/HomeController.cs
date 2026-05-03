@@ -21,64 +21,10 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    [HttpGet]
-    [Route("/{user}"), Route("/")]
-    public IActionResult Index(string user)
+    public IActionResult Index()
     {
-        bool isAdmin = false;
-        int duty = 0;
-        int leisure = 0;
-        if (string.IsNullOrEmpty(user))
-        {
-            user = "guest";
-        } else
-        {
-            user = user.ToLower();
-            JsonNode userInfo  = Users.GetUsers()[user];
-            if (userInfo != null)
-            {
-                isAdmin = (bool)userInfo["admin"];
-                duty = (int)userInfo["duty"];
-                leisure = (int)userInfo["leisure"];
-            }
-        }
-        // WriteDefaultValues();
-        Tilemap tilemap = PullTilemap();
-        HtmlString tilemapString = new(tilemap.ToJson());
-
-        // Now grab assets
-        AssetList assetList = new();
-        assetList.PullFromFile();
-        HtmlString assetListString = new(assetList.ToJson());
-
-        // How to deserialize json, goddamn:
-		// List<List<List<string>>> json = JsonSerializer.Deserialize<List<List<List<string>>>>((string)tilemapString);
-        // Console.WriteLine(tilemapString);
-        IndexViewModel viewModel = new IndexViewModel
-        {
-            TileMapString = tilemapString,
-            AssetList = assetListString,
-            User = user,
-            IsAdmin = isAdmin,
-            Duty = duty,
-            Leisure = leisure
-        };
-		return View(viewModel);
+        return RedirectToAction("Index", "Map");
     }
-
-
-	[HttpPost]
-    [Route("/{user}"), Route("/")]
-    public IActionResult Index(string user, string transferForm)
-    {
-        Console.Write("Post submitted: ");
-        Console.WriteLine(transferForm);
-
-        Tilemap tilemap = new(transferForm);
-        tilemap.SaveToFile();
-        return RedirectToAction("Index");
-    }
-
     public IActionResult Campsite()
     {
         return View();
@@ -93,26 +39,5 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-    public Tilemap PullTilemap()
-    {
-        Tilemap tilemap = new();
-        tilemap.PullFromFile();
-        tilemap.grid_height = 10;
-        tilemap.grid_width = 10;
-        return tilemap;
-    }
-
-    public static void WriteDefaultValues()
-    {
-        Tilemap tilemap = new();
-        tilemap.SetCell(0, 0, ["grass"]);
-        tilemap.SetCell(1, 0, ["grass"]);
-        tilemap.SetCell(0, 1, ["grass"]);
-        tilemap.grid_height = 10;
-        tilemap.grid_width = 10;
-        tilemap.SaveToFile();
-        ;
     }
 }

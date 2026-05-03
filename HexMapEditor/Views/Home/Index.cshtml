@@ -25,7 +25,7 @@
             if (Model.IsAdmin) {
             <button onclick = "save()">Save</button>
             <label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
-            <input type="radio" id="brushButton3" name="brushButtons" onclick="setBrush('erase')">
+            <input type="radio" id="brushButton0" name="brushButtons" onclick="setBrush('erase')">
             }
             }
     </div>
@@ -230,7 +230,7 @@ sessionStorage.setItem("brush", "grass");
                 if (index == 0) {
                     radiobtn.checked = true;
                 }
-                radiobtn.id = `brushButton${index}`;
+                radiobtn.id = `brushButton${index+1}`;
                 radiobtn.name = "brushButtons";
                 radiobtn.addEventListener("click", () => {
                     setBrush(element["Filename"])

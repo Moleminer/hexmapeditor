@@ -75,14 +75,9 @@ function eraseAt(x, y) {
 		// console.log(`Looking at ${hex.X} vs ${x} and ${hex.Y} vs ${y}. Full object being examined is ${JSON.stringify(hex)} `);
 		if (hex.X == x && hex.Y == y) {
 			isFound = true;
+			items[i].Values.pop();
 			editedLayer = items[i];
-			let index = editedLayer.Values.indexOf("fogowar")
-			if (index > -1) {
-				items[i].Values.splice(index, 1);
-				editedLayer.Values.splice(index, 1);
-			}
-			
-			console.log("Found hex, removing")
+			console.log("Found hex, removing top layer")
 			break;
 		}
 	} 

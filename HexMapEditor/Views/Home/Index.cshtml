@@ -192,7 +192,9 @@ drawContents(items, hex_list, isAdmin);
 
 //  TODO: This is like, twelve sins in a trenchcoat. FIX
 if (isAdmin) {
-    glazeWithInteract(hex_list);
+    glazeWithUseBrush(hex_list);
+} else {
+    glazeWithOpenNote(hex_list);
 }
 console.log(items);
 console.log(hex_list);

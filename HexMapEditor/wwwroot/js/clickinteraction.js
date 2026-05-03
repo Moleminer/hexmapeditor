@@ -1,4 +1,4 @@
-function glazeWithInteract(hex_list) {
+function glazeWithUseBrush(hex_list) {
     const target = document.getElementById("hexDisplay");
     for (let i = 0; i < hex_list.length; i++) {
         for (let j = 0; j < hex_list[i].length; j++) {
@@ -21,6 +21,10 @@ function glazeWithInteract(hex_list) {
         }
     }
     
+}
+
+function glazeWithOpenNote(hex_list) {
+	return;
 }
 
 function registerClick(clickEvent, x, y) {

@@ -94,26 +94,31 @@ function openNote(x, y) {
 	const button = document.getElementById("noteinput-button");
 	button.removeEventListener("click", () => {});
 	button.addEventListener("click", () => {
+		console.log("Button pressed")
 		// Input name is noteinput
 		var hexmap = sessionStorage.getItem("hexmap");
 		const form = document.createElement('form');
-		form.id = "noteinput";
+		
 		const input = document.getElementById('noteinput');
+		form.id = "noteinputform";
 		form.method = "POST";
-		form.action  = "map/updateNote";
+		form.action  = "/map/updateNote";
 		form.append(input);
 
 		const input_x = document.createElement('input');
 		input_x.setAttribute("id", "x");
+		input_x.name = "x";
+		input_x.type = "number";
 		input_x.value = x;
 		form.append(input_x);
 
 		const input_y = document.createElement('input');
 		input_y.setAttribute("id", "y");
+		input_y.name = "y";
+		input_y.type = "number";
 		input_y.value = y;
 		form.append(input_y);
 
-		form.append(input);
 		document.body.append(form);
 		form.submit();
 

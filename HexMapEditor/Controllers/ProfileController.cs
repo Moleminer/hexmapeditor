@@ -63,14 +63,14 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
 
 
 	[HttpPost]
-    public IActionResult Index(string user, string transferForm)
+    public IActionResult EditMap(string id, string transferForm)
     {
         Console.Write("Post submitted: ");
         Console.WriteLine(transferForm);
 
         Tilemap tilemap = new(transferForm);
         tilemap.SaveToFile();
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", "Map");
     }
 
     public IActionResult Campsite()

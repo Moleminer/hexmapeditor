@@ -38,9 +38,9 @@
 </div>
 
 <div id="overlay" onclick="closeNote()"></div>
-<div id="overlay-window" onclick="stopPropogation(this)">
+<div id="overlay-window"">
     <div><label for="noteinput"><h1>Showing Cell Notes:</h1></label></div>
-    <div><textarea id="noteinput" name="noteinput" rows="5" cols="33">
+    <div><textarea id="noteinput" name="noteinput" rows="10" cols="66">
         Default value, something went wrong loading this cell. 
     </textarea></div>
     <div><button id = "noteinput-button">Save</button></div>
@@ -149,6 +149,7 @@ function compareCell(a, b) {
     }
 }
 
+//TODO: Seperate functionality between index and editmap, or make a shared fragment
 function setBrush(brushType) {
     sessionStorage.setItem("brush", brushType);
     const brushLabel = document.getElementById("brushLabel");
@@ -163,7 +164,7 @@ function save()
     form.id = "transferForm";
     const input = document.createElement('input');
     form.method = "POST";
-    form.action  = "/mole";
+    form.action  = "/profile/editmap/mole";
     input.value = hexmap;
     input.type = "hidden";
     input.name = "transferForm";

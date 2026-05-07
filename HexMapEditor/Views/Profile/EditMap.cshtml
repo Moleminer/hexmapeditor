@@ -38,7 +38,7 @@
 </div>
 
 <div id="overlay" onclick="closeNote()"></div>
-<div id="overlay-window" onclick="stopPropogation(this)">
+<div id="overlay-window">
     <div><label for="note-input"><h1>Showing Cell Notes:</h1></label></div>
     <div><textarea id="note-input" name="note-input" rows="5" cols="33">
         Default value, something went wrong loading this cell. 
@@ -163,7 +163,7 @@ function save()
     form.id = "transferForm";
     const input = document.createElement('input');
     form.method = "POST";
-    form.action  = "/mole";
+    form.action  = "/profile/editmap/mole";
     input.value = hexmap;
     input.type = "hidden";
     input.name = "transferForm";

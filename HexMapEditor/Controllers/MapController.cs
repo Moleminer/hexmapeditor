@@ -96,6 +96,13 @@ public class MapController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+	public IActionResult RawJson()
+	{
+		Tilemap tilemap = PullTilemap();
+        HtmlString tilemapString = new(tilemap.ToJson());
+		return View(tilemapString);
+	}
+
     public Tilemap PullTilemap()
     {
         Tilemap tilemap = new();

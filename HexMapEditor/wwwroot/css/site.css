@@ -36,6 +36,12 @@ body {
   align-items: center;
 }
 
+.justify-right {
+  display: flex;
+  justify-content: right;
+  align-items: right;
+}
+
 .columncontainer3-2 {
   display: grid;
   grid-template-columns: 60% 40%;

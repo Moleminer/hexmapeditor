@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using HexMapEditor.Data
+@model LoginViewModel
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -26,7 +28,19 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Campsite">Campsite</a>
                         </li>
+                        
                     </ul>
+                    <div class="nav-item justify-right dropdown">
+                        <a class="text-dark">Log In</a>
+                        <div class="dropdown-content">
+                            <form asp-controller="profile" asp-action="login" method="post">
+                                <label asp-for="Username">Log In:</label>
+                                <input asp-for="Username"/>
+                                
+                                <button type="submit">Submit</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>

@@ -73,6 +73,13 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
         return RedirectToAction("Index", "Map");
     }
 
+    [HttpPost]
+    public IActionResult Login(LoginViewModel loginViewModel)
+    {
+        
+        return RedirectToAction("Index", "Map");
+    }
+
     public IActionResult Campsite()
     {
         return View();

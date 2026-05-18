@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Web;
 using Microsoft.AspNetCore.Html;
 using System.Text.Json.Nodes;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace HexMapEditor.Controllers;
 
@@ -76,8 +78,38 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
     [HttpPost]
     public IActionResult Login(LoginViewModel loginViewModel)
     {
-        
+        // We do this the proper way, adding an identity that is tied into the program properly
+
+        if (!VerifyLogin(loginViewModel)) {
+            ModelState.AddModelError(nameof(loginViewModel.Username), "Username not found");
+            return RedirectToAction("Index", "Map");
+        }
+
+        // Create the claimed attributes about the user
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, loginViewModel.Username),
+            new(ClaimTypes.Role, "Administrator")
+            // First attribute can be a custom string if need be. 
+        };
+
+        // 3. Wrap claims into an Identity, specifying auth scheme name
+        var claimsIdentity = new ClaimsIdentity(claims, "CookieUsernameAuth");
+
+        // 4. Create the Principal (The actual object that becomes HttpContext.User)
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+        // 5. Issue the cookie and sign the user in
+        HttpContext.SignInAsync("CookieUsernameAuth", claimsPrincipal);
+
+        //TODO: Defunct this
+        HttpContext.Session.SetString("Username", loginViewModel.Username);
         return RedirectToAction("Index", "Map");
+    }
+
+    private bool VerifyLogin(LoginViewModel loginViewModel)
+    {
+        return false;
     }
 
     public IActionResult Campsite()

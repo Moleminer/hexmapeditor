@@ -103,13 +103,20 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
         HttpContext.SignInAsync("CookieUsernameAuth", claimsPrincipal);
 
         //TODO: Defunct this
-        HttpContext.Session.SetString("Username", loginViewModel.Username);
+        // HttpContext.Session.SetString("Username", loginViewModel.Username);
         return RedirectToAction("Index", "Map");
     }
 
     private bool VerifyLogin(LoginViewModel loginViewModel)
     {
-        return false;
+        return true;
+    }
+
+    public IActionResult Logout()
+    {
+        HttpContext.SignOutAsync();
+        return RedirectToAction("Index", "Map");
+
     }
 
     public IActionResult Campsite()

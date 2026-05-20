@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Html;
 using System.Text.Json.Nodes;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HexMapEditor.Controllers;
 
@@ -18,27 +19,51 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
 {
     private readonly ILogger<ProfileController> _logger = logger;
 
-	[HttpGet]
-    public IActionResult EditMap(string id)
+    [Authorize]
+    public IActionResult Index()
     {
-		string user = id;
+        string user = User.Identity.Name;
         bool isAdmin = false;
         int duty = 0;
         int leisure = 0;
-        if (string.IsNullOrEmpty(user))
+        
+        user = user.ToLower();
+        JsonNode userInfo = Users.GetUsers()[user];
+        if (userInfo != null)
         {
-            user = "guest";
-        } else
-        {
-            user = user.ToLower();
-            JsonNode userInfo  = Users.GetUsers()[user];
-            if (userInfo != null)
-            {
-                isAdmin = (bool)userInfo["admin"];
-                duty = (int)userInfo["duty"];
-                leisure = (int)userInfo["leisure"];
-            }
+            isAdmin = (bool)userInfo["admin"];
+            duty = (int)userInfo["duty"];
+            leisure = (int)userInfo["leisure"];
         }
+
+        ProfileViewModel viewModel = new ProfileViewModel
+        {
+            User = user,
+            IsAdmin = isAdmin,
+            Duty = duty,
+            Leisure = leisure
+        };
+
+        return View(viewModel);
+    }
+    [Authorize]
+	[HttpGet]
+    public IActionResult EditMap()
+    {
+        string user = User.Identity.Name;
+        bool isAdmin = false;
+        int duty = 0;
+        int leisure = 0;
+        
+        user = user.ToLower();
+        JsonNode userInfo = Users.GetUsers()[user];
+        if (userInfo != null)
+        {
+            isAdmin = (bool)userInfo["admin"];
+            duty = (int)userInfo["duty"];
+            leisure = (int)userInfo["leisure"];
+        }
+
         // WriteDefaultValues();
         Tilemap tilemap = PullTilemap();
         HtmlString tilemapString = new(tilemap.ToJson());

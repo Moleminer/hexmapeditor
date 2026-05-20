@@ -1,1 +1,36 @@
 @* One day, a page to show character sheet and XP will go here *@
+@using Microsoft.AspNetCore.Html
+@{
+    ViewData["Title"] = $"{User.Identity.Name}'s Profile";
+}
+
+
+
+<div class="text-center">
+    <h1 class="display-4">World Map</h1>
+    <div class="main-container"> 
+        <svg width="1200" height="800" viewBox="0 0 660 420" id = "viewbox" class="center">
+    
+    <g id="hexDisplay">
+        <defs id="clipDefs"></defs>
+    </g> 
+    <div class="sidebar" id="legend">
+        <img src="~/images/compass.png" width=128px height=128px/>
+
+    </div>
+    </div> 
+    
+
+    <p id = "debug"></p>
+    </svg>
+    
+</div>
+
+<div id="overlay" onclick="closeNote()"></div>
+<div id="overlay-window">
+    <div><label for="note-input"><h1>Showing Cell Notes:</h1></label></div>
+    <div><textarea id="note-input" name="note-input" rows="5" cols="33">
+        Default value, something went wrong loading this cell. 
+    </textarea></div>
+    <div><button id = "note-input-button">Save</button></div>
+  </div>

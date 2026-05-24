@@ -186,6 +186,10 @@ const assets = @modelAssets;
 // Add assets to session storage for retrieval shortly
 sessionStorage.setItem("assets", JSON.stringify(assets));
 
+// Set click action to paint
+// TODO: Swap to an enum for less human error
+sessionStorage.setItem("clickAction", "paint");
+
 const debug = document.getElementById("debug");
 const viewbox = document.getElementById("hexDisplay");
 if (items.length != 0) {
@@ -211,7 +215,7 @@ sessionStorage.setItem("brush", "grass");
 </script>
 <script id="draw-legend">
     function drawLegend() {
-        const isAdmin = (sessionStorage.getItem("isadmin") == "true");
+        const isAdmin = @User.IsInRole("Administrator");
         const assets = JSON.parse(sessionStorage.getItem("assets"));
         const legend = document.getElementById("legend");
         assets.forEach((element, index) => {

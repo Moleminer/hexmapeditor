@@ -26,11 +26,13 @@ function glazeWithInteract(hex_empty_list) {
 }
 
 function registerClick(clickEvent, x, y) {
-	const isAdmin = (sessionStorage.getItem("isadmin") == "true");
-	if (isAdmin) {
+	const clickAction = sessionStorage.getItem("clickAction");
+	if (clickAction == "paint") {
 		applyBrushToCell(x, y);
-	} else {
+	} else if (clickAction == "note") {
 		openNote(x, y);
+	} else {
+		console.log("Unknown click event session state. ");
 	}
 }
 
@@ -43,7 +45,6 @@ function applyBrushToCell(x, y) {
 		eraseAt(x, y);
 		return;}
 	const hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
-	const needs_glaze = sessionStorage.getItem("isadmin");
 	let items = JSON.parse(sessionStorage.getItem("hexmap"));
 
 	// Create the json node to add to items
@@ -65,9 +66,7 @@ function applyBrushToCell(x, y) {
 	}
 	drawLayer(newLayer, hex_list);
 	// Only draw interact layer if in editing mode. 
-	if (needs_glaze) {
-		glazeLayerWithInteract(newLayer, hex_list);
-	}
+	glazeLayerWithInteract(newLayer, hex_list);
 	sessionStorage.setItem("hexmap", JSON.stringify(items));
 }
 
@@ -247,9 +246,9 @@ function glazeLayerWithInteract(layer, hex_list) {
 	target.appendChild(glazeLayer);
 }
 
-//TODO: Combine the two below functions via a data-driven definition instead of hard coding
 function getPath(contents, assets) {
-	const isAdmin = sessionStorage.getItem("isadmin");
+	const isAdmin = false;
+	//TODO: ADD BACK ADMIN VIEW OF FOG
 
 	var adminSuffix = "";
 	var found = false;

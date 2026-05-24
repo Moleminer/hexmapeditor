@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Web;
 using Microsoft.AspNetCore.Html;
 using System.Text.Json.Nodes;
+using System.Security.Claims;
 
 namespace HexMapEditor.Controllers;
 
@@ -22,25 +23,9 @@ public class MapController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index(string user)
+    public IActionResult Index()
     {
-        bool isAdmin = false;
-        int duty = 0;
-        int leisure = 0;
-        if (string.IsNullOrEmpty(user))
-        {
-            user = "guest";
-        } else
-        {
-            user = user.ToLower();
-            JsonNode userInfo  = Users.GetUsers()[user];
-            if (userInfo != null)
-            {
-                isAdmin = (bool)userInfo["admin"];
-                duty = (int)userInfo["duty"];
-                leisure = (int)userInfo["leisure"];
-            }
-        }
+
         // WriteDefaultValues();
         Tilemap tilemap = PullTilemap();
         HtmlString tilemapString = new(tilemap.ToJson());
@@ -57,10 +42,6 @@ public class MapController : Controller
         {
             TileMapString = tilemapString,
             AssetList = assetListString,
-            User = user,
-            IsAdmin = isAdmin,
-            Duty = duty,
-            Leisure = leisure
         };
 		return View(viewModel);
     }

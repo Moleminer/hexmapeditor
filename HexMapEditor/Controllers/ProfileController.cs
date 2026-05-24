@@ -46,23 +46,11 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
 
         return View(viewModel);
     }
-    [Authorize]
+    
+    [Authorize(Roles = "Administrator")]
 	[HttpGet]
     public IActionResult EditMap()
     {
-        string user = User.Identity.Name;
-        bool isAdmin = false;
-        int duty = 0;
-        int leisure = 0;
-        
-        user = user.ToLower();
-        JsonNode userInfo = Users.GetUsers()[user];
-        if (userInfo != null)
-        {
-            isAdmin = (bool)userInfo["admin"];
-            duty = (int)userInfo["duty"];
-            leisure = (int)userInfo["leisure"];
-        }
 
         // WriteDefaultValues();
         Tilemap tilemap = PullTilemap();
@@ -80,10 +68,6 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
         {
             TileMapString = tilemapString,
             AssetList = assetListString,
-            User = user,
-            IsAdmin = isAdmin,
-            Duty = duty,
-            Leisure = leisure
         };
 		return View(viewModel);
     }
@@ -111,15 +95,21 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
             return RedirectToAction("Index", "Map");
         }
 
-        
+        string adminStatus = ((bool)userRecord["admin"] == true)?"Administrator":"User";
 
         // Create the claimed attributes about the user
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, loginViewModel.Username),
-            new(ClaimTypes.Role, "Administrator")
-            // First attribute can be a custom string if need be. 
+            new(ClaimTypes.Role, adminStatus),
+            new Claim("Duty", (string)userRecord["duty"]),
+            new Claim("Leisure", (string)userRecord["leisure"])
         };
+
+        // How to access custom claims:
+        // List<Claim> claims = User.Claims.ToList();
+        // string duty = claims.FirstOrDefault(c => c.Type == "Duty").Value;
+        // string leisure = claims.FirstOrDefault(c => c.Type == "Leisure").Value;
 
         // 3. Wrap claims into an Identity, specifying auth scheme name
         var claimsIdentity = new ClaimsIdentity(claims, "CookieUsernameAuth");

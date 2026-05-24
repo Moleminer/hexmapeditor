@@ -188,7 +188,6 @@ const assets = @modelAssets;
 sessionStorage.setItem("assets", JSON.stringify(assets));
 
 const debug = document.getElementById("debug");
-const viewbox = document.getElementById("hexDisplay");
 if (items.length != 0) {
     // TODO: The first 2 20s are just floating at start of this file
     var hex_list = gen_hex_list(EMPTY_HEX_GRID_HEIGHT, EMPTY_HEX_GRID_WIDTH, HEX_RADIUS);

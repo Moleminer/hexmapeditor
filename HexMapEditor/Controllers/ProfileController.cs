@@ -105,10 +105,13 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
     {
         // We do this the proper way, adding an identity that is tied into the program properly
 
-        if (!VerifyLogin(loginViewModel)) {
+        JsonObject userRecord = TryGetUser(loginViewModel.Username);
+        if (userRecord == null) {
             ModelState.AddModelError(nameof(loginViewModel.Username), "Username not found");
             return RedirectToAction("Index", "Map");
         }
+
+        
 
         // Create the claimed attributes about the user
         var claims = new List<Claim>
@@ -132,9 +135,17 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
         return RedirectToAction("Index", "Map");
     }
 
-    private bool VerifyLogin(LoginViewModel loginViewModel)
+    private static JsonObject TryGetUser(string user)
     {
-        return true;
+        try
+        {
+            JsonObject j = Users.GetUsers()[user].AsObject();
+            return j;
+        } catch
+        {
+            Console.Error.WriteLine($"User ${user} could not be found in users.json");
+        }
+        return null;
     }
 
     public IActionResult Logout()

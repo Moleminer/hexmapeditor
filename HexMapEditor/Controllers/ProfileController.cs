@@ -96,14 +96,16 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
         }
 
         string adminStatus = ((bool)userRecord["admin"] == true)?"Administrator":"User";
+        int duty = (int)userRecord["duty"];
+        int leisure = (int)userRecord["leisure"];
 
         // Create the claimed attributes about the user
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, loginViewModel.Username),
             new(ClaimTypes.Role, adminStatus),
-            new Claim("Duty", (string)userRecord["duty"]),
-            new Claim("Leisure", (string)userRecord["leisure"])
+            new Claim("Duty", duty.ToString()),
+            new Claim("Leisure", leisure.ToString())
         };
 
         // How to access custom claims:
@@ -129,11 +131,12 @@ public class ProfileController(ILogger<ProfileController> logger) : Controller
     {
         try
         {
-            JsonObject j = Users.GetUsers()[user].AsObject();
-            return j;
-        } catch
+            JsonObject userObject = Users.GetUsers()[user.ToLower()].AsObject();
+            return userObject;
+        } catch (Exception e)
         {
-            Console.Error.WriteLine($"User ${user} could not be found in users.json");
+            Console.Error.WriteLine(e.StackTrace);
+            Console.Error.WriteLine($"User {user} could not be found in users.json");
         }
         return null;
     }

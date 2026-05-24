@@ -22,7 +22,7 @@
         <img src="~/images/compass.png" width=128px height=128px/>
 
         @{ 
-            if (Model.IsAdmin) {
+            if (User.IsInRole("Administrator")) {
             <button onclick = "save()">Save</button>
             <label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
             <input type="radio" id="brushButton0" name="brushButtons" onclick="setBrush('erase')">
@@ -176,8 +176,7 @@ function save()
 // First step, check if we're an admin. This changes a lot of behaviour (TODO: Should admin have seperate cshtml page?)
 True = true;
 False = false;
-isAdmin = @Model.IsAdmin
-sessionStorage.setItem("isadmin", (isAdmin==true));
+isAdmin = @User.IsInRole("Administrator");
 
 // We don't need to parse these, because javascript doesn't know they're meant to be a string at this point
 const items = @modelJson;

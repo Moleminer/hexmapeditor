@@ -1,61 +1,28 @@
-@using System.Text.Json
-@using System.Text.Json.Serialization
-@using System.Web
 @using Microsoft.AspNetCore.Html
-@{
-    HtmlString modelJson = Model.TileMapString;
-    HtmlString modelAssets = Model.AssetList;
-    ViewData["Title"] = "World Map";
-}
 
 
+<svg width="1200" height="800" viewBox="0 0 660 420" id = "viewbox" class="center">
 
-<div class="text-center">
-    <h1 class="display-4">World Map</h1>
-    <div class="main-container"> 
-        @* @await Component.InvokeAsync("RenderMap",
-                 new { 
-                     tileMap =  Model.TileMapString,
-                     assetList = Model.AssetList}
-                 ) *@
-        <svg width="1200" height="800" viewBox="0 0 660 420" id = "viewbox" class="center">
-    
-        <g id="hexDisplay">
-            <defs id="clipDefs"></defs>
-        </g> 
-        <div class="sidebar" id="legend">
-            <img src="~/images/compass.png" width=128px height=128px/>
+<g id="hexDisplay">
+	<defs id="clipDefs"></defs>
+</g> 
+<div class="sidebar" id="legend">
+	<img src="~/images/compass.png" width=128px height=128px/>
 
-            @{ 
-                if (User.IsInRole("Administrator")) {
-                <button onclick = "save()">Save</button>
-                <label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
-                <input type="radio" id="brushButton0" name="brushButtons" onclick="setBrush('erase')">
-                }
-                }
-        </div>
-       </svg> 
-    </div> 
-    
-
-    <p id = "debug"></p>
-    
-    
+	@{ 
+		if (@User.IsInRole("Administrator")) {
+		<button onclick = "save()">Save</button>
+		<label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
+		<input type="radio" id="brushButton0" name="brushButtons" onclick="setBrush('erase')">
+		}
+		}
 </div>
+</svg>
 
-<div id="overlay" onclick="closeNote()"></div>
-<div id="overlay-window">
-    <div><label for="note-input"><h1>Showing Cell Notes:</h1></label></div>
-    <div><textarea id="note-input" name="note-input" rows="5" cols="33">
-        Default value, something went wrong loading this cell. 
-    </textarea></div>
-    <div><button id = "note-input-button">Save</button></div>
-  </div>
 
-@section Scripts {
-    <script src="\js\hexagon.js"></script>
-    <script src="\js\clickinteraction.js"></script>
-    <script>
+
+<script src="\js\hexagon.js"></script>
+<script>
 const EMPTY_HEX_GRID_HEIGHT = 32;
 const EMPTY_HEX_GRID_WIDTH = 23;
 const HEX_RADIUS = 15;
@@ -154,67 +121,36 @@ function compareCell(a, b) {
         return 1;
     }
 }
+// This is dumb but it works
+var True = true;
+var False = false;
 
-function setBrush(brushType) {
-    sessionStorage.setItem("brush", brushType);
-    const brushLabel = document.getElementById("brushLabel");
-    brushLabel.textContent = brushType.charAt(0).toUpperCase() +
-            brushType.substr(1).toLowerCase();;
-}
+// Wrap function call inside an event which will happen once the whole page has loaded
+document.addEventListener("DOMContentLoaded", function () {
+    // We don't need to parse these, because javascript doesn't know they're meant to be a string at this point
+    const items = @Model.TileMapString;
+    const assets = @Model.AssetList;
 
-function save()
-{
-    var hexmap = sessionStorage.getItem("hexmap");
-	const form = document.createElement('form');
-    form.id = "transferForm";
-    const input = document.createElement('input');
-    form.method = "POST";
-    form.action  = "/profile/editmap/mole";
-    input.value = hexmap;
-    input.type = "hidden";
-    input.name = "transferForm";
-    form.append(input);
-    document.body.append(form);
-    form.submit();
-}
+    // Add assets to session storage for retrieval shortly
+    sessionStorage.setItem("assets", JSON.stringify(assets));
 
-// Main:   
-// First step, check if we're an admin. This changes a lot of behaviour (TODO: Should admin have seperate cshtml page?)
-True = true;
-False = false;
-isAdmin = @User.IsInRole("Administrator");
+    // TODO: Make sure we set this in every other place: Set click action to open note
+    // sessionStorage.setItem("clickAction", "note");
 
-// We don't need to parse these, because javascript doesn't know they're meant to be a string at this point
-const items = @modelJson;
-const assets = @modelAssets;
-
-// Add assets to session storage for retrieval shortly
-sessionStorage.setItem("assets", JSON.stringify(assets));
-
-// Set click action to paint
-// TODO: Swap to an enum for less human error
-sessionStorage.setItem("clickAction", "paint");
-
-const debug = document.getElementById("debug");
-const viewbox = document.getElementById("hexDisplay");
-if (items.length != 0) {
-    // TODO: The first 2 20s are just floating at start of this file
-    var hex_list = gen_hex_list(EMPTY_HEX_GRID_HEIGHT, EMPTY_HEX_GRID_WIDTH, HEX_RADIUS);
-}
-console.log("hex list: ")
-console.log(hex_list)
+    if (items.length != 0) {
+        // TODO: The first 2 numbers are just floating at start of this file
+        var hex_list = gen_hex_list(EMPTY_HEX_GRID_HEIGHT, EMPTY_HEX_GRID_WIDTH, HEX_RADIUS);
+    }
+    console.log("hex list: ")
+    console.log(hex_list)
 
 
-drawContents(items, hex_list, isAdmin);
+    drawContents(items, hex_list);
 
-
-
-glazeWithInteract(hex_list);
-console.log(items);
-console.log(hex_list);
-sessionStorage.setItem("hexmap", JSON.stringify(items));
-sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
-sessionStorage.setItem("brush", "grass");
+    sessionStorage.setItem("hexmap", JSON.stringify(items));
+    sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
+    sessionStorage.setItem("brush", "grass");
+});
 
 
 </script>
@@ -260,6 +196,10 @@ sessionStorage.setItem("brush", "grass");
             legend.appendChild(div);
             });
     }
-    drawLegend()
+
+    // Wrap function call inside an event which will happen once the whole page has loaded
+    document.addEventListener("DOMContentLoaded", function () {
+       drawLegend()
+    });
+    
 </script>
-}

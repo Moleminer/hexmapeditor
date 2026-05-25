@@ -26,6 +26,7 @@ function glazeWithInteract(hex_empty_list) {
 }
 
 function registerClick(clickEvent, x, y) {
+	console.log("register click")
 	const clickAction = sessionStorage.getItem("clickAction");
 	if (clickAction == "paint") {
 		applyBrushToCell(x, y);

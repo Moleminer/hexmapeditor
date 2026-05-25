@@ -13,27 +13,15 @@
 <div class="text-center">
     <h1 class="display-4">World Map</h1>
     <div class="main-container"> 
-        <svg width="1200" height="800" viewBox="0 0 660 420" id = "viewbox" class="center">
-    
-    <g id="hexDisplay">
-        <defs id="clipDefs"></defs>
-    </g> 
-    <div class="sidebar" id="legend">
-        <img src="~/images/compass.png" width=128px height=128px/>
-
-        @{ 
-            if (@User.IsInRole("Administrator")) {
-            <button onclick = "save()">Save</button>
-            <label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
-            <input type="radio" id="brushButton0" name="brushButtons" onclick="setBrush('erase')">
-            }
-            }
-    </div>
+    @await Component.InvokeAsync("RenderMap",
+                 new { 
+                     tileMapString =  Model.TileMapString,
+                     assetList = Model.AssetList
+                     }
+                 )
     </div> 
-    
 
     <p id = "debug"></p>
-    </svg>
     
 </div>
 
@@ -50,104 +38,10 @@
     <script src="\js\hexagon.js"></script>
     <script src="\js\clickinteraction.js"></script>
     <script>
-const EMPTY_HEX_GRID_HEIGHT = 32;
+// These are defined in the viewcomponent
+@* const EMPTY_HEX_GRID_HEIGHT = 32;
 const EMPTY_HEX_GRID_WIDTH = 23;
-const HEX_RADIUS = 15;
-
-function hexToString(hex) {
-	console.log(hex.x + ", " + hex.y);
-}
-
-// Could have target be passed in for better abstraction
-function drawHex(hex) {
-	const target = document.getElementById("hexDisplay");
-	const child = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-	var payload = ""
-	for (let i = 0; i < 6; i++) {
-		var point = get_hex_corner(hex, hex.radius, i);
-		payload += Math.round(point[0]) + "," + Math.round(point[1]) + " "
-	}
-	child.setAttribute("points", payload.trim());
-	target.appendChild(child);
-}
-
-function drawContents(contents_list, hex_list) {
-    // Pull assets from session storage to get their paths later on
-
-    const assets = JSON.parse(sessionStorage.getItem("assets"));
-
-    const radius = hex_list[0][0].radius
-    for (let i = 0; i < contents_list.length; i++) {
-        const contents_x = contents_list[i].X;
-        const contents_y = contents_list[i].Y;
-        const id = "clip-" + contents_x + "-" + contents_y;
-
-        // Grab our elements we're appending: a hex, and its clip list for cropping
-        const target = document.getElementById("hexDisplay");
-        const defs = document.getElementById("clipDefs");
-        const clipElement = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
-        const child = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-
-
-        // Create polygon for clipping
-        var payload = ""
-        let MinX = 0;
-        let MinY = 0;
-        for (let k = 0; k < 6; k++) {
-            var point = get_hex_corner(hex_list[contents_x][contents_y], radius, k);
-            let x = Math.round(point[0])
-            let y = Math.round(point[1])
-            payload += x + "," + y + " "
-
-            // Since the hex_corner function runs in the same cycle every time, the lowest X and Y 
-            // are always at the same corners of the hexagon being drawn. 
-            if (k == 3) MinX = x;
-            if (k == 4) MinY = y;
-        } 
-        child.setAttribute("points", payload.trim());
-        clipElement.appendChild(child);
-        clipElement.setAttribute("id", id);
-        defs.appendChild(clipElement);
-        
-        for (let k = 0; k < contents_list[i].Values.length; k++) {
-                // Check scale of the next drawing
-                const scale = getScale(contents_list[i].Values[k], assets);
-                // Calculate required horizontal offset. A scale of '1' results in an offset of 0. This should work with scales >1 too. 
-                const offset = radius * (1 - scale);
-
-                const contentLayer = document.createElementNS('http://www.w3.org/2000/svg','image');
-                // Create image to be clipped, and adjust its position based on if it's a foreground or background image. 
-                contentLayer.setAttribute("href", getPath(contents_list[i].Values[k], assets));
-                contentLayer.setAttribute("clip-path", "url(#" + id + ")");
-                contentLayer.setAttribute("x", (MinX + offset).toString());
-                contentLayer.setAttribute("y", MinY.toString());
-                contentLayer.setAttribute("width", radius * scale * 2);
-                contentLayer.setAttribute("height", radius * scale * 2);
-                target.appendChild(contentLayer);
-            
-        }
-        
-    }
-	
-}
-
-
-@* Function only used to sort cell objects. *@
-function compareCell(a, b) {
-    if (a[0] == b[0]) {
-        if (a[1] == b[1]) {
-            return 0;
-        } else if (a[1] < b[1]) {
-            return -1;
-        } else {
-            return 1;
-        }
-    } else if (a[0] < b[0]) {
-        return -1;
-    } else {
-        return 1;
-    }
-}
+const HEX_RADIUS = 15; *@
 
 //TODO: Seperate functionality between index and editmap, or make a shared fragment
 function setBrush(brushType) {
@@ -159,7 +53,7 @@ function setBrush(brushType) {
 
 function save()
 {
-    var hexmap = sessionStorage.getItem("hexmap");
+    var hexmap = JSON.parse(sessionStorage.getItem("assets"));
 	const form = document.createElement('form');
     form.id = "transferForm";
     const input = document.createElement('input');
@@ -174,85 +68,23 @@ function save()
 }
 
 // Main:   
-// First step, check if we're an admin. This changes a lot of behaviour (TODO: Should admin have seperate cshtml page?)
-True = true;
-False = false;
-isAdmin = @User.IsInRole("Administrator");
+document.addEventListener("DOMContentLoaded", function () {
+    // Set click action to open note
+    sessionStorage.setItem("clickAction", "note");
 
-// We don't need to parse these, because javascript doesn't know they're meant to be a string at this point
-const items = @modelJson;
-const assets = @modelAssets;
+    const debug = document.getElementById("debug");
+    if ((EMPTY_HEX_GRID_HEIGHT > 0) && (EMPTY_HEX_GRID_WIDTH > 0)) {
+        // TODO: The first 2 20s are just floating at start of this file
+        var hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
 
-// Add assets to session storage for retrieval shortly
-sessionStorage.setItem("assets", JSON.stringify(assets));
-
-// Set click action to open note
-sessionStorage.setItem("clickAction", "note");
-
-const debug = document.getElementById("debug");
-if (items.length != 0) {
-    // TODO: The first 2 20s are just floating at start of this file
-    var hex_list = gen_hex_list(EMPTY_HEX_GRID_HEIGHT, EMPTY_HEX_GRID_WIDTH, HEX_RADIUS);
-}
-console.log("hex list: ")
-console.log(hex_list)
-
-
-drawContents(items, hex_list, isAdmin);
-
-
-
-glazeWithInteract(hex_list);
-console.log(items);
-console.log(hex_list);
-sessionStorage.setItem("hexmap", JSON.stringify(items));
-sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
-sessionStorage.setItem("brush", "grass");
-
-
-</script>
-<script id="draw-legend">
-    function drawLegend() {
-        const isAdmin = @User.IsInRole("Administrator");
-        const assets = JSON.parse(sessionStorage.getItem("assets"));
-        const legend = document.getElementById("legend");
-        assets.forEach((element, index) => {
-            if (element["Filename"].includes("_admin")) {
-                return;
-            }
-            const div = document.createElement('div');
-            div.className = 'sidebar-element';
-
-            const img = document.createElement('img');
-            img.src = getPath(element["Filename"], assets);
-            img.width = 32;
-            img.height = 32;
-
-            const text = document.createElement('p');
-            text.textContent = element["Name"];
-            text.className = 'sidebar-text'
-
-            // Also add a radio button if in admin mode
-            if (isAdmin == true) {
-                const radiobtn = document.createElement('input');
-                radiobtn.type = "radio";
-                if (index == 0) {
-                    radiobtn.checked = true;
-                }
-                radiobtn.id = `brushButton${index+1}`;
-                radiobtn.name = "brushButtons";
-                radiobtn.addEventListener("click", () => {
-                    setBrush(element["Filename"])
-                });
-
-                div.appendChild(radiobtn)
-            }
-
-            div.appendChild(img);
-            div.appendChild(text);
-            legend.appendChild(div);
-            });
     }
-    drawLegend()
+
+    glazeWithInteract(hex_list);
+
+    sessionStorage.setItem("brush", "grass");
+    });
+
+
+
 </script>
 }

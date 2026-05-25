@@ -12,15 +12,34 @@ using System.Text.Json.Nodes;
 
 namespace HexMapEditor.ViewComponents;
 
-public class RenderMapViewComponents : ViewComponent
+[ViewComponent]
+public class RenderMapViewComponent : ViewComponent
 {
 
-    public async Task<IViewComponentResult> InvokeAsync(
-                                            int maxPriority, bool isDone)
-    {
+    // public async Task<IViewComponentResult> InvokeAsync(
+    //                                         HtmlString tileMapString, HtmlString assetList)
+    // {
+	// 	RenderMapViewModel viewModel = new(){
+	// 		TileMapString = tileMapString,
+	// 		AssetList = assetList
+	// 		// TODO: Could put the svg element in here?
+	// 	};
+    //     // var items = await GetItemsAsync(maxPriority, isDone);
+    //     return View(viewModel);
+    // }
+
+	public IViewComponentResult Invoke(HtmlString tileMapString, HtmlString assetList)
+        {
+ 
+            RenderMapViewModel viewModel = new(){
+			TileMapString = tileMapString,
+			AssetList = assetList
+			// TODO: Could put the svg element in here?
+		};
         // var items = await GetItemsAsync(maxPriority, isDone);
-        return View();
-    }
+        return View(viewModel);
+        }
+
 
     // private Task<List<TodoItem>> GetItemsAsync(int maxPriority, bool isDone)
     // {

@@ -165,6 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             const div = document.createElement('div');
             div.className = 'sidebar-element';
+            div.id = `legend-${element["Name"]}`
 
             const img = document.createElement('img');
             img.src = getPath(element["Filename"], assets);
@@ -174,22 +175,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const text = document.createElement('p');
             text.textContent = element["Name"];
             text.className = 'sidebar-text'
-
-            // Also add a radio button if in admin mode
-            if (isAdmin == true) {
-                const radiobtn = document.createElement('input');
-                radiobtn.type = "radio";
-                if (index == 0) {
-                    radiobtn.checked = true;
-                }
-                radiobtn.id = `brushButton${index+1}`;
-                radiobtn.name = "brushButtons";
-                radiobtn.addEventListener("click", () => {
-                    setBrush(element["Filename"])
-                });
-
-                div.appendChild(radiobtn)
-            }
 
             div.appendChild(img);
             div.appendChild(text);

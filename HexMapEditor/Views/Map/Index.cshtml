@@ -76,12 +76,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if ((EMPTY_HEX_GRID_HEIGHT > 0) && (EMPTY_HEX_GRID_WIDTH > 0)) {
         // TODO: The first 2 20s are just floating at start of this file
         var hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
-
     }
 
     glazeWithInteract(hex_list);
 
-    sessionStorage.setItem("brush", "grass");
     });
 
 

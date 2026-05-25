@@ -8,14 +8,7 @@
 </g> 
 <div class="sidebar" id="legend">
 	<img src="~/images/compass.png" width=128px height=128px/>
-
-	@{ 
-		if (@User.IsInRole("Administrator")) {
-		<button onclick = "save()">Save</button>
-		<label for="myCheck">Brush: <a id="brushLabel">Grass</a><br /></label> 
-		<input type="radio" id="brushButton0" name="brushButtons" onclick="setBrush('erase')">
-		}
-		}
+    <button id="legendSaveButton" hidden="true">Error: Function not found</button>
 </div>
 </svg>
 
@@ -149,7 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     sessionStorage.setItem("hexmap", JSON.stringify(items));
     sessionStorage.setItem("hexlist", JSON.stringify(hex_list));
-    sessionStorage.setItem("brush", "grass");
 });
 
 

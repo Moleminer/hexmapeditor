@@ -90,12 +90,35 @@
             
             const assets = JSON.parse(sessionStorage.getItem("assets"));
             const legend = document.getElementById("legend");
+            var firstElement = true;
             assets.forEach((element, index) => {
                 if (element["Filename"].includes("_admin")) {
                     return;
                 }
 
-                const div = document.getElementById(`legend-${element["Name"]}`);
+                const legendElementDiv = document.getElementById(`legend-${element["Name"]}`);
+
+                if (firstElement == true) {
+                    const saveButton = document.getElementById('legendSaveButton')
+                    saveButton.addEventListener("click", () => { save() });
+                    saveButton.hidden = false;
+                    saveButton.textContent = "Save"
+
+                    const brushLabel = document.createElement("label");
+                    brushLabel.innerHTML = "Brush: <a id=\"brushLabel\">Grass</a><br/>"
+                    legend.insertBefore(brushLabel, legendElementDiv)
+
+                    const emptybtn = document.createElement('input');
+                    emptybtn.type = "radio";
+                    emptybtn.id = "brushButton0";
+                    emptybtn.name = "brushButtons";
+                    emptybtn.addEventListener("click", () => {
+                        setBrush("erase")
+                    });
+                    legend.insertBefore(emptybtn, legendElementDiv)
+
+                    firstElement = false;
+                }
                 
                 const radiobtn = document.createElement('input');
                 radiobtn.type = "radio";
@@ -108,7 +131,7 @@
                     setBrush(element["Filename"])
                 });
 
-                div.appendChild(radiobtn)
+                legendElementDiv.appendChild(radiobtn)
                 });
         }
         document.addEventListener("DOMContentLoaded", function () {

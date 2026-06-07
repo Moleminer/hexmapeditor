@@ -6,12 +6,77 @@
 			"duty":1
 		},
 
-		"spooky": {
+		"halo": {
 			"admin":false,
 			"leisure":1,
 			"duty":1
 		},
-		"martos": {
+		"viridia": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"sont": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"vilmora": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"fedwir": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"krog urtle": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"rob": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"hestegor": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"vesle": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"evelyn": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"ursula": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"laralei": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"botrytus": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"chryseehk": {
+			"admin":false,
+			"leisure":1,
+			"duty":1
+		},
+		"nana": {
 			"admin":false,
 			"leisure":1,
 			"duty":1

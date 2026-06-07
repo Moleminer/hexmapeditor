@@ -38,18 +38,6 @@
     <script src="\js\hexagon.js"></script>
     <script src="\js\clickinteraction.js"></script>
     <script>
-// These are defined in the viewcomponent
-@* const EMPTY_HEX_GRID_HEIGHT = 32;
-const EMPTY_HEX_GRID_WIDTH = 23;
-const HEX_RADIUS = 15; *@
-
-//TODO: Seperate functionality between index and editmap, or make a shared fragment
-function setBrush(brushType) {
-    sessionStorage.setItem("brush", brushType);
-    const brushLabel = document.getElementById("brushLabel");
-    brushLabel.textContent = brushType.charAt(0).toUpperCase() +
-            brushType.substr(1).toLowerCase();;
-}
 
 function save()
 {

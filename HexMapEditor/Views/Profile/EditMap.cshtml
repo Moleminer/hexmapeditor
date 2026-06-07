@@ -64,8 +64,6 @@
         }
 
         // Main:   
-        // First step, check if we're an admin. This changes a lot of behaviour
-        // ABOVE is now WRONG we know we're in admin mode if we're in editmap. 
         True = true;
         False = false;
 
@@ -74,11 +72,7 @@
             // Set click action to paint
             // TODO: Swap to an enum for less human error
             sessionStorage.setItem("clickAction", "paint");
-
-            if ((EMPTY_HEX_GRID_HEIGHT > 0) && (EMPTY_HEX_GRID_WIDTH > 0)) {
-                // TODO: The first 2 20s are just floating at start of this file
-                var hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
-            }
+            var hex_list = JSON.parse(sessionStorage.getItem("hexlist"));
 
             glazeWithInteract(hex_list);
             

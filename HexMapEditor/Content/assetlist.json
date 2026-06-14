@@ -27,7 +27,7 @@
 	{
 		"Name":"Unknown",
 		"Filename":"unknown",
-		"Scale":1
+		"Scale":0.8
 	},
 	{
 		"Name":"Fog of War (Admin)",
@@ -56,8 +56,18 @@
 		"Scale":0.8
 	},
 	{
-		"Name":"Camp",
+		"Name":"Outpost",
 		"Filename":"buildings",
+		"Scale":0.8
+	},
+	{
+		"Name":"Civilisation",
+		"Filename":"civilisation",
+		"Scale":0.8
+	},
+	{
+		"Name":"Flowers",
+		"Filename":"flowers",
 		"Scale":0.8
 	}
 ]

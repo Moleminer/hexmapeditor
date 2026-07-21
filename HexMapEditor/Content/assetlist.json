@@ -69,5 +69,21 @@
 		"Name":"Flowers",
 		"Filename":"flowers",
 		"Scale":0.8
+	},
+	{
+		"Name":"Abode",
+		"Filename":"abode",
+		"Scale":0.8
+	},
+	{
+		"Name":"Cave",
+		"Filename":"cave",
+		"Scale":0.8
+	},
+	{
+		"Name":"Ruin",
+		"Filename":"ruin",
+		"Scale":0.8
 	}
+
 ]

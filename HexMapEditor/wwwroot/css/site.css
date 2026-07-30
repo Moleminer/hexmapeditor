@@ -75,7 +75,7 @@ body {
   gap: 5px;             /* Space between Compass and Key */
   width: 200px;          /*TODO: Long enough? */
   padding: 10px;
-  /*border-left: 2px solid #ccc; /* Optional visual separator */
+  background-color: #ffece8;
 }
 
 .sidebar-element {
@@ -107,16 +107,24 @@ body {
   flex-direction: column;
   position: fixed; /* Sit on top of the page content */
   display: none; /* Hidden by default */
-  width: 70%; 
-  height: 60%; 
+  width: 50%; 
+  height: 75%; 
   top: 15%;
   left: 20%;
   right: 20%;
-  bottom: 15%;
-  background-color: rgb(145, 145, 145); /* Grey Background */
+  bottom: 5%;
+  background-color: rgb(230, 230, 230); /* Grey Background */
+  /* box-shadow: 10px; */
   z-index: 3; /* Specify a stack order in case you're using a different order for other elements */
   padding: 50px;
   gap:20px;
   vertical-align: middle;
+  margin:auto;
 }
 
+.center-item {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin:auto
+}

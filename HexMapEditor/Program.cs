@@ -1,4 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using HexMapEditor.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddHttpContextAccessor();
+
+// Add database connection
+builder.Services.AddDbContext<RGRContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("RGRContext")));
 
 // Add a user cookie to the container for logins
 builder.Services.AddAuthentication("CookieUsernameAuth").AddCookie("CookieUsernameAuth", options =>

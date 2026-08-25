@@ -12,25 +12,16 @@ using System.Text.Json.Nodes;
 
 namespace HexMapEditor.Controllers;
 
-public class HomeController : Controller
+public class TownController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<TownController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    public TownController(ILogger<TownController> logger)
     {
         _logger = logger;
     }
 
     public IActionResult Index()
-    {
-        return RedirectToAction("Index", "Map");
-    }
-    public IActionResult Campsite()
-    {
-        return RedirectToAction("Index", "Town");
-    }
-
-     public IActionResult About()
     {
         return View();
     }

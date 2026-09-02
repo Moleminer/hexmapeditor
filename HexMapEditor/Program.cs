@@ -19,7 +19,13 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 
 // Add database connection
-builder.Services.AddDbContext<RGRContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("RGRContext")));
+builder.Services.AddDbContext<RGRContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("RGRContext"),sqlServerOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        }));
 
 // Add a user cookie to the container for logins
 builder.Services.AddAuthentication("CookieUsernameAuth").AddCookie("CookieUsernameAuth", options =>

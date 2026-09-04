@@ -19,6 +19,8 @@ CREATE TABLE Users (
   HasBastion BIT
 );
 
+DROP TABLE IF EXISTS RandomItem;
+DROP TABLE IF EXISTS Attribute;
 DROP TABLE IF EXISTS ItemType;
 CREATE TABLE ItemType (
   ItemTypeID int PRIMARY KEY,
@@ -27,25 +29,26 @@ CREATE TABLE ItemType (
 
 DROP TABLE IF EXISTS Attribute;
 CREATE TABLE Attribute (
-  AttributeID int PRIMARY KEY,
+  AttributeID int IDENTITY(1,1) PRIMARY KEY,
   AttributeValue VARCHAR(255),
   ItemTypeID int FOREIGN KEY REFERENCES ItemType,
-  AttributeDescription VARCHAR(255)
+  AttributeDescription VARCHAR(255),
+  PriceModifier float
 );
 
 DROP TABLE IF EXISTS RandomItem;
 CREATE TABLE RandomItem (
-  ItemID int PRIMARY KEY,
+  ItemID int IDENTITY(1,1) PRIMARY KEY,
   ItemName VARCHAR(255),
   ItemTypeID int FOREIGN KEY REFERENCES ItemType,
   ItemDescription VARCHAR(255),
-  AttributeID int FOREIGN KEY REFERENCES Attribute,
-
+  Price float
 );
 
 DROP TABLE IF EXISTS NanaStock;
 CREATE TABLE NanaStock (
-  StockID int PRIMARY KEY,
+  StockID int IDENTITY(1,1) PRIMARY KEY,
   ItemID int, -- will reference in log form RandomItem
-  ItemDescription VARCHAR(255) -- Composite field, made of RandomItem's descriptions. log form so no database connection. 
+  ItemDescription VARCHAR(255), -- Composite field, made of RandomItem's descriptions. log form so no database connection. 
+  Price float -- Log form, RandomItem's Price * Attribute Modifier
 );

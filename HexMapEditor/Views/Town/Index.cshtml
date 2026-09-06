@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Camp Site";
+    ViewData["Title"] = "St Bluishbyrd";
 }
 <h1>@ViewData["Title"]</h1>
 
@@ -7,9 +7,9 @@
     <img src="~/images/camp.png" width=90% height=90%/>
     <div>
         <div class="stickynote"><h4>Current food levels: 6</h4>
-        <p>Parties can leave camp with <strong>5</strong> day's rations.</p></div>
-        <div class="stickynote"><h4>Current security: 5</h4></div>
-        <p>The surrounding <strong>1</strong> hexes away from the town are safer and can be traversed quickly with no risk. </p>
+        <p>Parties can leave camp with <strong>6</strong> day's rations.</p></div>
+        <div class="stickynote"><h4>Current security: Medium</h4></div>
+        <p>The surrounding <strong>2</strong> hexes away from the town are safer and can be traversed quickly with no risk. </p>
         <div class="stickynote"><h4>Diplomacy: 80%</h4></div>
         <p>The queen empress and the kobold nation are more or less satisfied with your actions. </p>
     </div>
@@ -22,6 +22,7 @@
     <p>Nana is the local shopkeep, distinguishable by finding the largest,
          most extravagant building in the camp. She drives a hard bargain but 
          has been sponsoring tipoffs of nearby ruins.</p>
+         <button> <a asp-area="" asp-controller="Town" asp-action="NanasEmporium">Enter Store</a></button>
     <h3>Karst</h3>
     <p>Karst is the human sheriff who spearheaded the expedition into the
         forsaken continent. He often lingers near the supply area, helping with logistics and mapping.

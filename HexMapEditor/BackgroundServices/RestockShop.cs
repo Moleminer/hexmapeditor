@@ -57,12 +57,19 @@ public class RestockShopBackgroundService : BackgroundService
             // (6, 'Pet'),
             // (7, 'Misc');
 
-        // TODO: SWAP TO ONLY FURNITURE
-		List<HexMapEditor.Models.Attribute> attributes = context.Attributes.ToList();
-        List<RandomItem> items = context.RandomItems.ToList();
+        StockStoreForType(1, NANA_STOCK_EQUIPMENT, context, cancellationToken);
+        StockStoreForType(5, NANA_STOCK_FURNITURE, context, cancellationToken);
 
+        
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private void StockStoreForType(int itemTypeID, int numElements, RGRContext context, CancellationToken cancellationToken)
+    {
         Random rand = new();
-        for (int i = 0; i < NANA_STOCK_FURNITURE; i++)
+        List<HexMapEditor.Models.Attribute> attributes = context.Attributes.Where(x => x.ItemTypeId == itemTypeID).ToList();
+        List<RandomItem> items = context.RandomItems.Where(x => x.ItemTypeId == itemTypeID).ToList();
+        for (int i = 0; i < numElements; i++)
         {
             RandomItem item = items.ElementAt(rand.Next(items.Count));
             HexMapEditor.Models.Attribute attribute = attributes.ElementAt(rand.Next(attributes.Count));
@@ -75,61 +82,5 @@ public class RestockShopBackgroundService : BackgroundService
                 Price = item.Price * attribute.PriceModifier
             });
         }
-        // List<HexMapEditor.Attribute> attributes = context.Attributes.ToList();
-        
-        
-        // 1. Find payments that are scheduled and in the past
-        // List<BillPay> billpays = await context.BillPays
-        //         .Where(x => x.BillPayStatus == BILLPAYSTATUS.Scheduled)
-        //         .Where(x => x.ScheduleTimeUtc < DateTime.UtcNow)
-        //         .Include(x => x.Account)
-        //         .ToListAsync();
-        
-        // // 2: Check if the account has enough money, process transaction if so. 
-        
-        // foreach (BillPay b in billpays) {
-        //     decimal effectiveBalance = b.Account.Balance;
-        //     if (b.Account.AccountType == ACCOUNTTYPE.Checking) { effectiveBalance += 500; }
-
-        //     if (effectiveBalance >= b.Amount)
-        //     {
-        //         // Make transaction
-        //         Transaction t = new Transaction
-        //         {
-        //             TransactionType = TRANSACTIONTYPE.Billpay,
-        //             AccountNumber = b.AccountNumber,
-        //             Amount = b.Amount,
-        //             TransactionTimeUtc = DateTime.UtcNow
-
-        //         };
-        //         await context.Transactions.AddAsync(t);
-        //         // Update balance
-        //         b.Account.Balance -= b.Amount;
-
-        //         // Refresh monthly transaction
-        //         if (b.Period == 'M')
-        //         {
-        //             BillPay refreshedBill = new BillPay
-        //             {
-        //                 AccountNumber = b.AccountNumber,
-        //                 PayeeID = b.PayeeID,
-        //                 Amount = b.Amount,
-        //                 ScheduleTimeUtc = b.ScheduleTimeUtc.AddMonths(1),
-        //                 Period = 'M',
-        //                 BillPayStatus = BILLPAYSTATUS.Scheduled
-        //             };
-        //             context.BillPays.Add(refreshedBill);
-        //         }
-
-        //         // Set billpay to completed
-        //         b.BillPayStatus = BILLPAYSTATUS.Completed;
-                
-        //     } else
-        //     {
-        //         // Not enough money, fail
-        //         b.BillPayStatus = BILLPAYSTATUS.Failed;
-        //     }
-        // }
-        await context.SaveChangesAsync(cancellationToken);
     }
 }

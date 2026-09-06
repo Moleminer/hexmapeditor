@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Camp Site";
+}
+<h1>@ViewData["Title"]</h1>
+
+<div class="columncontainer3-2">
+    
+
+</div>
+<div>
+    <h2>Store Stock</h2>
+    <br />
+	<ul>
+    @{
+		foreach(NanaStock item in Model.Stock) {
+			string coinage = "gp";
+			if (item.Price < 0.1) {
+				item.Price *= 100;
+				coinage = "cp";
+			} else if (item.Price < 1) {
+				item.Price *= 10;
+				coinage = "sp";
+			}
+				
+			<li>@item.ItemName: @item.ItemDescription. @item.Price @coinage</li>
+		}
+	}
+	</ul>
+
+</div>

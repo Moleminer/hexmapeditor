@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HexMapEditor;
+namespace HexMapEditor.Models;
 
 public partial class Asset
 {

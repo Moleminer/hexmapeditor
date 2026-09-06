@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HexMapEditor;
+namespace HexMapEditor.Models;
 
 public partial class RandomItem
 {
@@ -13,9 +13,7 @@ public partial class RandomItem
 
     public string ItemDescription { get; set; }
 
-    public int? AttributeId { get; set; }
-
-    public virtual Attribute Attribute { get; set; }
+    public double? Price { get; set; }
 
     public virtual ItemType ItemType { get; set; }
 }

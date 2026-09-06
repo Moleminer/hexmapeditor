@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using HexMapEditor.Models;
 
 //TODO: This breaks when it gets changed to .data, why?
 namespace HexMapEditor;
@@ -18,7 +19,7 @@ public partial class RGRContext : DbContext
 
     public virtual DbSet<Asset> Assets { get; set; }
 
-    public virtual DbSet<Attribute> Attributes { get; set; }
+    public virtual DbSet<Models.Attribute> Attributes { get; set; }
 
     public virtual DbSet<Grid> Grids { get; set; }
 
@@ -48,7 +49,7 @@ public partial class RGRContext : DbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<Attribute>(entity =>
+        modelBuilder.Entity<Models.Attribute>(entity =>
         {
             entity.HasKey(e => e.AttributeId).HasName("PK__Attribut__C189298A8B7E99F5");
 
@@ -103,7 +104,6 @@ public partial class RGRContext : DbContext
             entity.ToTable("NanaStock");
 
             entity.Property(e => e.StockId)
-                .ValueGeneratedNever()
                 .HasColumnName("StockID");
             entity.Property(e => e.ItemDescription)
                 .HasMaxLength(255)
@@ -120,7 +120,6 @@ public partial class RGRContext : DbContext
             entity.Property(e => e.ItemId)
                 .ValueGeneratedNever()
                 .HasColumnName("ItemID");
-            entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
             entity.Property(e => e.ItemDescription)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -128,10 +127,6 @@ public partial class RGRContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.ItemTypeId).HasColumnName("ItemTypeID");
-
-            entity.HasOne(d => d.Attribute).WithMany(p => p.RandomItems)
-                .HasForeignKey(d => d.AttributeId)
-                .HasConstraintName("FK__RandomIte__Attri__0D7A0286");
 
             entity.HasOne(d => d.ItemType).WithMany(p => p.RandomItems)
                 .HasForeignKey(d => d.ItemTypeId)

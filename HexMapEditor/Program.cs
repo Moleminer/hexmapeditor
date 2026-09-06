@@ -2,6 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using HexMapEditor.Data;
 using Microsoft.EntityFrameworkCore;
+using HexMapEditor;
+using BackgroundServices;
+using HexMapEditor.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +36,9 @@ builder.Services.AddAuthentication("CookieUsernameAuth").AddCookie("CookieUserna
     options.Cookie.Name = "Username";
     options.LoginPath = "/";
 });
+
+// Add background service
+builder.Services.AddHostedService<RestockShopBackgroundService>();
 
 var app = builder.Build();
 

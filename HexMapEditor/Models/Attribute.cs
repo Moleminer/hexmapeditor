@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HexMapEditor;
+namespace HexMapEditor.Models;
 
 public partial class Attribute
 {
@@ -13,7 +13,7 @@ public partial class Attribute
 
     public string AttributeDescription { get; set; }
 
-    public virtual ItemType ItemType { get; set; }
+    public double? PriceModifier { get; set; }
 
-    public virtual ICollection<RandomItem> RandomItems { get; set; } = new List<RandomItem>();
+    public virtual ItemType ItemType { get; set; }
 }

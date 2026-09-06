@@ -49,6 +49,9 @@ DROP TABLE IF EXISTS NanaStock;
 CREATE TABLE NanaStock (
   StockID int IDENTITY(1,1) PRIMARY KEY,
   ItemID int, -- will reference in log form RandomItem
+  AttributeID int, -- will reference in log form Attribute
+  ItemName VARCHAR(255), -- Compositve field of Attribute + RandomItem
   ItemDescription VARCHAR(255), -- Composite field, made of RandomItem's descriptions. log form so no database connection. 
   Price float -- Log form, RandomItem's Price * Attribute Modifier
 );
+select * from nanastock

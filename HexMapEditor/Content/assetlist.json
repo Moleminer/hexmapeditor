@@ -84,6 +84,11 @@
 		"Name":"Ruin",
 		"Filename":"ruin",
 		"Scale":0.8
+	},
+	{
+		"Name":"Tarrasque",
+		"Filename":"tarrasque",
+		"Scale":0.8
 	}
 
 ]

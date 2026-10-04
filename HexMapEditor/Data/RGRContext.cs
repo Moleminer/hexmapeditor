@@ -25,6 +25,8 @@ public partial class RGRContext : DbContext
 
     public virtual DbSet<ItemType> ItemTypes { get; set; }
 
+    public virtual DbSet<Metadata> Metadata { get; set; }
+
     public virtual DbSet<NanaStock> NanaStocks { get; set; }
 
     public virtual DbSet<RandomItem> RandomItems { get; set; }
@@ -141,6 +143,7 @@ public partial class RGRContext : DbContext
                 .HasMaxLength(128)
                 .IsUnicode(false);
         });
+        modelBuilder.Entity<Metadata>(entity => {});
 
         OnModelCreatingPartial(modelBuilder);
     }

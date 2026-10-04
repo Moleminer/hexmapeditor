@@ -54,4 +54,10 @@ CREATE TABLE NanaStock (
   ItemDescription VARCHAR(255), -- Composite field, made of RandomItem's descriptions. log form so no database connection. 
   Price float -- Log form, RandomItem's Price * Attribute Modifier
 );
-select * from nanastock
+
+DROP TABLE IF EXISTS Metadata;
+CREATE TABLE Metadata (
+  UpdateDate datetime2,
+  VersionNumber float,
+  
+);

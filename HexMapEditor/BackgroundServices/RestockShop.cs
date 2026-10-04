@@ -11,7 +11,7 @@ public class RestockShopBackgroundService : BackgroundService
     private readonly ILogger<RestockShopBackgroundService> _logger;
     private readonly static int NANA_STOCK_FURNITURE = 8;
     private readonly static int NANA_STOCK_EQUIPMENT = 5;
-    private readonly static int NANA_STOCK_MAGIC_ITEM = 2;
+    private readonly static int NANA_STOCK_MAGIC_ITEM = 5;
     private readonly static int NANA_STOCK_SCROLL = 3;
     private readonly static int NANA_STOCK_TRINKETS = 6;
 
@@ -24,16 +24,20 @@ public class RestockShopBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Nana's premium restock background service is running");
-
+        await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
         while (!cancellationToken.IsCancellationRequested)
         {
             using var scope = _services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<RGRContext>();
-            await RestockShops(context, cancellationToken);
+            if (context.Metadata.First().UpdateDate.CompareTo(DateTime.Today.AddDays(-2).Date)<0)
+            {
+                await RestockShops(context, cancellationToken);
+                Console.WriteLine("Added to nana's store!");
+            }
+            
             
             _logger.LogInformation("Nana's premium background check completed, see you next week!");
-            Console.WriteLine("Added to nana's store!");
-            await Task.Delay(TimeSpan.FromDays(7), cancellationToken);
+            await Task.Delay(TimeSpan.FromDays(2), cancellationToken);
         }
     }
 
@@ -59,7 +63,9 @@ public class RestockShopBackgroundService : BackgroundService
 
         StockStoreForType(1, NANA_STOCK_EQUIPMENT, context, cancellationToken);
         StockStoreForType(5, NANA_STOCK_FURNITURE, context, cancellationToken);
-
+        StockStoreForType(2, NANA_STOCK_MAGIC_ITEM, context, cancellationToken);
+        Metadata metadata = await context.Metadata.FirstAsync(cancellationToken);
+        metadata.UpdateDate = DateTime.Now;
         
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -79,7 +85,7 @@ public class RestockShopBackgroundService : BackgroundService
                 AttributeID = attribute.AttributeId,
                 ItemName = $"{attribute.AttributeValue} {item.ItemName}",
                 ItemDescription = item.ItemDescription + attribute.AttributeDescription,
-                Price = item.Price * attribute.PriceModifier
+                Price = Math.Round((double)(item.Price * attribute.PriceModifier), 1)
             });
         }
     }

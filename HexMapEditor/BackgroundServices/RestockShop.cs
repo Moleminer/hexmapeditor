@@ -85,7 +85,7 @@ public class RestockShopBackgroundService : BackgroundService
                 AttributeID = attribute.AttributeId,
                 ItemName = $"{attribute.AttributeValue} {item.ItemName}",
                 ItemDescription = item.ItemDescription + attribute.AttributeDescription,
-                Price = Math.Round((double)(item.Price * attribute.PriceModifier), 1)
+                Price = Math.Round((double)(item.Price * attribute.PriceModifier), 3)
             });
         }
     }

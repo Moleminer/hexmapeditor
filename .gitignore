@@ -2,3 +2,4 @@ lib
 bin
 obj
 HexMapEditor/appsettings.json
+HexMapEditor/BackgroundServices/RestockShop.cs

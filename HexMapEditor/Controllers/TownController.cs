@@ -12,6 +12,7 @@ using System.Text.Json.Nodes;
 using HexMapEditor.ViewModels;
 using HexMapEditor;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace HexMapEditor.Controllers;
 
@@ -36,12 +37,12 @@ public class TownController : Controller
         return View();
     }
 
-    public IActionResult NanasEmporium()
+    public async Task<IActionResult> NanasEmporium()
     {
         
         if (_context.Metadata.First().UpdateDate.CompareTo(DateTime.Today.AddDays(-2).Date)<0)
         {
-            RestockShops();
+            await RestockShops();
             Console.WriteLine("Added to nana's store!");
         }
         NanasEmporiumViewModel viewModel = new()
